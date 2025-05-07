@@ -1,0 +1,60 @@
+name: Pallet Tests
+
+on:
+  push:
+    branches: [ add-pallet-auto-tasks ]
+  pull_request:
+    branches: [ State-Driven-Task ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Test Pallet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: wasm32-unknown-unknown
+          components: rustfmt, clippy
+          override: true
+          profile: minimal
+      
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          
+      - name: Check Format
+        run: |
+          cd substrate/frame/pallet-auto-tasks
+          cargo fmt -- --check
+          
+      - name: Clippy Check
+        run: |
+          cd substrate/frame/pallet-auto-tasks
+          cargo clippy -- -D warnings
+          
+      - name: Run Tests
+        run: |
+          cd substrate/frame/pallet-auto-tasks
+          cargo test
+          
+      - name: Run Tests with Experimental Feature
+        run: |
+          cd substrate/frame/pallet-auto-tasks
+          cargo test --features experimental
+          
+      - name: Build Documentation
+        run: |
+          cd substrate/frame/pallet-auto-tasks
+          cargo doc --no-deps
