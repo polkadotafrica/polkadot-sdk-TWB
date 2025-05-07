@@ -149,7 +149,7 @@ where
 			if let Ok(call) = self.0.function.clone().try_into() {
 				if let crate::Call::eth_transact { payload } = call {
 					let checked = E::try_into_checked_extrinsic(payload, self.encoded_size())?;
-					return Ok(checked)
+					return Ok(checked);
 				};
 			}
 		}
@@ -346,8 +346,9 @@ pub trait EthExtra {
 			}
 		} else {
 			let blob = match polkavm::ProgramBlob::blob_length(&data) {
-				Some(blob_len) =>
-					blob_len.try_into().ok().and_then(|blob_len| (data.split_at_checked(blob_len))),
+				Some(blob_len) => {
+					blob_len.try_into().ok().and_then(|blob_len| (data.split_at_checked(blob_len)))
+				},
 				_ => None,
 			};
 
@@ -389,7 +390,7 @@ pub trait EthExtra {
 		// by the account.
 		if eth_fee < actual_fee {
 			log::debug!(target: LOG_TARGET, "eth fees {eth_fee:?} too low, actual fees: {actual_fee:?}");
-			return Err(InvalidTransaction::Payment.into())
+			return Err(InvalidTransaction::Payment.into());
 		}
 
 		let tip =

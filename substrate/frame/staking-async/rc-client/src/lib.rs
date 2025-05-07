@@ -259,8 +259,8 @@ impl<AccountId> SessionReport<AccountId> {
 
 	/// Merge oneself with another instance.
 	pub fn merge(mut self, other: Self) -> Result<Self, UnexpectedKind> {
-		if self.end_index != other.end_index ||
-			self.activation_timestamp != other.activation_timestamp
+		if self.end_index != other.end_index
+			|| self.activation_timestamp != other.activation_timestamp
 		{
 			// Must be some bug -- don't merge.
 			return Err(UnexpectedKind::SessionReportIntegrityFailed);

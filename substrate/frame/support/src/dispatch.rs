@@ -518,7 +518,7 @@ pub trait WeighData<T> {
 
 impl<T> WeighData<T> for Weight {
 	fn weigh_data(&self, _: T) -> Weight {
-		return *self
+		return *self;
 	}
 }
 
@@ -530,13 +530,13 @@ impl<T> PaysFee<T> for (Weight, DispatchClass, Pays) {
 
 impl<T> WeighData<T> for (Weight, DispatchClass) {
 	fn weigh_data(&self, args: T) -> Weight {
-		return self.0.weigh_data(args)
+		return self.0.weigh_data(args);
 	}
 }
 
 impl<T> WeighData<T> for (Weight, DispatchClass, Pays) {
 	fn weigh_data(&self, args: T) -> Weight {
-		return self.0.weigh_data(args)
+		return self.0.weigh_data(args);
 	}
 }
 
@@ -554,7 +554,7 @@ impl<T> PaysFee<T> for (Weight, DispatchClass) {
 
 impl<T> WeighData<T> for (Weight, Pays) {
 	fn weigh_data(&self, args: T) -> Weight {
-		return self.0.weigh_data(args)
+		return self.0.weigh_data(args);
 	}
 }
 
@@ -639,13 +639,13 @@ impl<T> PaysFee<T> for u64 {
 
 impl<T> WeighData<T> for u64 {
 	fn weigh_data(&self, _: T) -> Weight {
-		return Weight::from_parts(*self, 0)
+		return Weight::from_parts(*self, 0);
 	}
 }
 
 impl<T> WeighData<T> for (u64, DispatchClass, Pays) {
 	fn weigh_data(&self, args: T) -> Weight {
-		return self.0.weigh_data(args)
+		return self.0.weigh_data(args);
 	}
 }
 
@@ -663,7 +663,7 @@ impl<T> PaysFee<T> for (u64, DispatchClass, Pays) {
 
 impl<T> WeighData<T> for (u64, DispatchClass) {
 	fn weigh_data(&self, args: T) -> Weight {
-		return self.0.weigh_data(args)
+		return self.0.weigh_data(args);
 	}
 }
 
@@ -681,7 +681,7 @@ impl<T> PaysFee<T> for (u64, DispatchClass) {
 
 impl<T> WeighData<T> for (u64, Pays) {
 	fn weigh_data(&self, args: T) -> Weight {
-		return self.0.weigh_data(args)
+		return self.0.weigh_data(args);
 	}
 }
 

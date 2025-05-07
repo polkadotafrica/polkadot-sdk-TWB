@@ -185,8 +185,8 @@ impl<T: Config> SolutionDataProvider for Pallet<T> {
 
 					// inform the verifier that they can now try again, if we're still in the signed
 					// validation phase.
-					if crate::Pallet::<T>::current_phase().is_signed_validation() &&
-						Submissions::<T>::has_leader(current_round)
+					if crate::Pallet::<T>::current_phase().is_signed_validation()
+						&& Submissions::<T>::has_leader(current_round)
 					{
 						// defensive: verifier just reported back a result, it must be in clear
 						// state.

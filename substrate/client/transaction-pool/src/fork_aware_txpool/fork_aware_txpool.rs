@@ -488,7 +488,7 @@ where
 		);
 
 		let Ok(block_number) = self.api.resolve_block_number(at) else {
-			return Box::new(std::iter::empty())
+			return Box::new(std::iter::empty());
 		};
 
 		let best_result = {
@@ -740,7 +740,7 @@ where
 			return Ok(mempool_results
 				.into_iter()
 				.map(|r| r.map(|r| r.hash).map_err(Into::into))
-				.collect::<Vec<_>>())
+				.collect::<Vec<_>>());
 		}
 
 		// Submit all the transactions to the mempool
@@ -749,8 +749,9 @@ where
 			.zip(xts.clone())
 			.map(|(result, xt)| async move {
 				match result {
-					Err(TxPoolApiError::ImmediatelyDropped) =>
-						self.attempt_transaction_replacement(source, false, xt).await,
+					Err(TxPoolApiError::ImmediatelyDropped) => {
+						self.attempt_transaction_replacement(source, false, xt).await
+					},
 					_ => result,
 				}
 			})
@@ -831,8 +832,9 @@ where
 			"fatp::submit_one"
 		);
 		match self.submit_at(_at, source, vec![xt]).await {
-			Ok(mut v) =>
-				v.pop().expect("There is exactly one element in result of submit_at. qed."),
+			Ok(mut v) => {
+				v.pop().expect("There is exactly one element in result of submit_at. qed.")
+			},
 			Err(e) => Err(e),
 		}
 	}
@@ -857,8 +859,9 @@ where
 
 		let insertion = match self.mempool.push_watched(source, xt.clone()) {
 			Ok(result) => result,
-			Err(TxPoolApiError::ImmediatelyDropped) =>
-				self.attempt_transaction_replacement(source, true, xt.clone()).await?,
+			Err(TxPoolApiError::ImmediatelyDropped) => {
+				self.attempt_transaction_replacement(source, true, xt.clone()).await?
+			},
 			Err(e) => return Err(e.into()),
 		};
 
@@ -1065,7 +1068,7 @@ where
 					?tree_route,
 					"Skipping ChainEvent - no last block in tree route"
 				);
-				return
+				return;
 			},
 		};
 
@@ -1075,7 +1078,7 @@ where
 				?hash_and_number,
 				"view already exists for block"
 			);
-			return
+			return;
 		}
 
 		let best_view = self.view_store.find_best_view(tree_route);
@@ -1111,13 +1114,13 @@ where
 			let Some(oldest_block_number) =
 				included_transactions.first_key_value().map(|(k, _)| k.number)
 			else {
-				return
+				return;
 			};
 
-			if at.number.saturating_sub(oldest_block_number).into() <=
-				self.finality_timeout_threshold.into()
+			if at.number.saturating_sub(oldest_block_number).into()
+				<= self.finality_timeout_threshold.into()
 			{
-				return
+				return;
 			}
 
 			let mut finality_timedout_blocks =
@@ -1266,7 +1269,7 @@ where
 	/// Returns a `Vec` of transactions hashes
 	async fn fetch_block_transactions(&self, at: &HashAndNumber<Block>) -> Vec<TxHash<Self>> {
 		if let Some(txs) = self.included_transactions.lock().get(at) {
-			return txs.clone()
+			return txs.clone();
 		};
 
 		trace!(
@@ -1304,7 +1307,7 @@ where
 		let recent_finalized_block = self.enactment_state.lock().recent_finalized_block();
 
 		let Ok(tree_route) = self.api.tree_route(recent_finalized_block, at.hash) else {
-			return Default::default()
+			return Default::default();
 		};
 
 		let mut all_txs = HashSet::new();
@@ -1313,8 +1316,8 @@ where
 			// note: There is no point to fetch the transactions from blocks older than threshold.
 			// All transactions included in these blocks, were already removed from pool
 			// with FinalityTimeout event.
-			if at.number.saturating_sub(block.number).into() <=
-				self.finality_timeout_threshold.into()
+			if at.number.saturating_sub(block.number).into()
+				<= self.finality_timeout_threshold.into()
 			{
 				all_txs.extend(self.fetch_block_transactions(block).await);
 			}
@@ -1593,7 +1596,7 @@ where
 			.await;
 
 		let Some(priority) = validated_tx.priority() else {
-			return Err(TxPoolApiError::ImmediatelyDropped)
+			return Err(TxPoolApiError::ImmediatelyDropped);
 		};
 
 		self.attempt_transaction_replacement_inner(xt, xt_hash, priority, source, watched)
@@ -1652,7 +1655,7 @@ where
 				});
 		}
 
-		return Ok(insertion_info)
+		return Ok(insertion_info);
 	}
 }
 
@@ -1679,10 +1682,11 @@ where
 		let compute_tree_route = |from, to| -> Result<TreeRoute<Block>, String> {
 			match self.api.tree_route(from, to) {
 				Ok(tree_route) => Ok(tree_route),
-				Err(e) =>
+				Err(e) => {
 					return Err(format!(
 						"Error occurred while computing tree_route from {from:?} to {to:?}: {e}"
-					)),
+					))
+				},
 			}
 		};
 		let block_id_to_number =

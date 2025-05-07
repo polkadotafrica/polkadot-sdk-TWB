@@ -156,7 +156,7 @@ impl<T: Config> Precompile<T> for Modexp {
 
 		// if mod_len is 0 output must be empty
 		if mod_len == 0 {
-			return Ok(ExecReturnValue { data: vec![], flags: ReturnFlags::empty() })
+			return Ok(ExecReturnValue { data: vec![], flags: ReturnFlags::empty() });
 		}
 
 		// Gas formula allows arbitrary large exp_len when base and modulus are empty, so we need to

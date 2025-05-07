@@ -368,7 +368,7 @@ pub(crate) mod pallet {
 		pub(crate) fn compute_invalid_score() -> Result<(ElectionScore, u32), FeasibilityError> {
 			// ensure that this is only called when all pages are verified individually.
 			if QueuedSolutionBackings::<T>::iter_keys().count() != T::Pages::get() as usize {
-				return Err(FeasibilityError::Incomplete)
+				return Err(FeasibilityError::Incomplete);
 			}
 
 			let mut total_supports: BTreeMap<T::AccountId, PartialBackings> = Default::default();
@@ -380,7 +380,7 @@ pub(crate) mod pallet {
 				entry.backers = entry.backers.saturating_add(backers);
 
 				if entry.backers > T::MaxBackersPerWinnerFinal::get() {
-					return Err(FeasibilityError::FailedToBoundSupport)
+					return Err(FeasibilityError::FailedToBoundSupport);
 				}
 			}
 
@@ -700,7 +700,7 @@ impl<T: Config> Pallet<T> {
 				// here.
 				entry.backers = entry.backers.saturating_add(support.voters.len() as u32);
 				if entry.backers > T::MaxBackersPerWinnerFinal::get() {
-					return Err((*page, FeasibilityError::FailedToBoundSupport))
+					return Err((*page, FeasibilityError::FailedToBoundSupport));
 				}
 			}
 
@@ -876,7 +876,7 @@ pub fn feasibility_check_page_inner_with_snapshot<T: MinerConfig>(
 
 			// Check that all of the targets are valid based on the snapshot.
 			if assignment.distribution.iter().any(|(t, _)| !targets.contains(t)) {
-				return Err(FeasibilityError::InvalidVote)
+				return Err(FeasibilityError::InvalidVote);
 			}
 			Ok(())
 		})
@@ -1000,9 +1000,9 @@ impl<T: Config> AsynchronousVerifier for Pallet<T> {
 		// exist if we were doing something.
 		#[cfg(debug_assertions)]
 		assert!(
-			!matches!(StatusStorage::<T>::get(), Status::Ongoing(_)) ||
-				(matches!(StatusStorage::<T>::get(), Status::Ongoing(_)) &&
-					QueuedSolution::<T>::invalid_iter().count() > 0)
+			!matches!(StatusStorage::<T>::get(), Status::Ongoing(_))
+				|| (matches!(StatusStorage::<T>::get(), Status::Ongoing(_))
+					&& QueuedSolution::<T>::invalid_iter().count() > 0)
 		);
 		QueuedSolution::<T>::clear_invalid_and_backings_unchecked();
 

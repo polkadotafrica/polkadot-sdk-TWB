@@ -118,7 +118,7 @@ async fn dispute_past_session_slashing() -> Result<(), anyhow::Error> {
 			.await?;
 		if let Some((session, _, _)) = disputes.first() {
 			dispute_session = *session;
-			break
+			break;
 		}
 	}
 

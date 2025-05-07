@@ -361,7 +361,7 @@ async fn distribute_collation_with_receipt(
 				)))
 				.unwrap();
 				// This call is mandatory - we are done:
-				break
+				break;
 			},
 			other => panic!("Unexpected message received: {:?}", other),
 		}
@@ -521,8 +521,9 @@ fn decode_collation_response(bytes: &[u8]) -> (CandidateReceipt, PoV) {
 		CollationFetchingResponse::decode(&mut &bytes[..]).expect("Decoding should work");
 	match response {
 		CollationFetchingResponse::Collation(receipt, pov) => (receipt, pov),
-		CollationFetchingResponse::CollationWithParentHeadData { receipt, pov, .. } =>
-			(receipt, pov),
+		CollationFetchingResponse::CollationWithParentHeadData { receipt, pov, .. } => {
+			(receipt, pov)
+		},
 	}
 }
 

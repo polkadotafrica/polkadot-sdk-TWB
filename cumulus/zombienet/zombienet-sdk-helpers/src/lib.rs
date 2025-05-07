@@ -85,7 +85,7 @@ pub async fn assert_finalized_para_throughput(
 
 		// Do not count blocks with session changes, no backed blocks there.
 		if is_session_change {
-			continue
+			continue;
 		}
 
 		current_block_count += 1;
@@ -254,7 +254,7 @@ pub async fn wait_for_first_session_change(
 		});
 
 		if is_session_change {
-			return Ok(())
+			return Ok(());
 		}
 
 		if waited_block_num >= WAIT_MAX_BLOCKS_FOR_SESSION {

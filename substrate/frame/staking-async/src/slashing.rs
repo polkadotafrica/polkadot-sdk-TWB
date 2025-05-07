@@ -126,7 +126,7 @@ impl SlashingSpans {
 	pub(crate) fn end_span(&mut self, now: EraIndex) -> bool {
 		let next_start = now.defensive_saturating_add(1);
 		if next_start <= self.last_start {
-			return false
+			return false;
 		}
 
 		let last_length = next_start.defensive_saturating_sub(self.last_start);
@@ -270,7 +270,7 @@ fn next_offence<T: Config>() -> Option<(EraIndex, T::AccountId, OffenceRecord<T:
 		// If the exposure page is 0, then the offence has been processed.
 		if offence_record.exposure_page == 0 {
 			ProcessingOffence::<T>::kill();
-			return Some((offence_era, offender, offence_record))
+			return Some((offence_era, offender, offence_record));
 		}
 
 		// Update the next page.
@@ -284,7 +284,7 @@ fn next_offence<T: Config>() -> Option<(EraIndex, T::AccountId, OffenceRecord<T:
 			},
 		));
 
-		return Some((offence_era, offender, offence_record))
+		return Some((offence_era, offender, offence_record));
 	}
 
 	// Nothing in processing offence. Try to enqueue the next offence.
@@ -337,7 +337,7 @@ pub(crate) fn process_offence<T: Config>() -> Weight {
 
 	add_db_reads_writes(1, 1);
 	let Some((offence_era, offender, offence_record)) = next_offence::<T>() else {
-		return incomplete_consumed_weight
+		return incomplete_consumed_weight;
 	};
 
 	log!(
@@ -357,7 +357,7 @@ pub(crate) fn process_offence<T: Config>() -> Weight {
 	else {
 		// this can only happen if the offence was valid at the time of reporting but became too old
 		// at the time of computing and should be discarded.
-		return incomplete_consumed_weight
+		return incomplete_consumed_weight;
 	};
 
 	let slash_page = offence_record.exposure_page;
@@ -384,7 +384,7 @@ pub(crate) fn process_offence<T: Config>() -> Weight {
 			offence_record.reported_era,
 		);
 		// No slash to apply. Discard.
-		return incomplete_consumed_weight
+		return incomplete_consumed_weight;
 	};
 
 	<Pallet<T>>::deposit_event(super::Event::<T>::SlashComputed {
@@ -506,7 +506,7 @@ fn slash_validator<T: Config>(params: SlashParams<T>) -> (BalanceOf<T>, BalanceO
 		// kick out the validator even if they won't be slashed,
 		// as long as the misbehavior is from their most recent slashing span.
 		kick_out_if_recent::<T>(params);
-		return (Zero::zero(), Zero::zero())
+		return (Zero::zero(), Zero::zero());
 	}
 
 	// apply slash to validator.
@@ -707,7 +707,7 @@ impl<'a, T: 'a + Config> Drop for InspectingSpans<'a, T> {
 	fn drop(&mut self) {
 		// only update on disk if we slashed this account.
 		if !self.dirty {
-			return
+			return;
 		}
 
 		if let Some((start, end)) = self.spans.prune(self.window_start) {
@@ -776,7 +776,7 @@ pub fn do_slash<T: Config>(
 	let value = ledger.slash(value, asset::existential_deposit::<T>(), slash_era);
 	if value.is_zero() {
 		// nothing to do
-		return
+		return;
 	}
 
 	// Skip slashing for virtual stakers. The pallets managing them should handle the slashing.
@@ -815,7 +815,7 @@ pub(crate) fn apply_slash<T: Config>(unapplied_slash: UnappliedSlash<T>, slash_e
 
 	for &(ref nominator, nominator_slash) in &unapplied_slash.others {
 		if nominator_slash.is_zero() {
-			continue
+			continue;
 		}
 
 		do_slash::<T>(
@@ -844,7 +844,7 @@ fn pay_reporters<T: Config>(
 		// nobody to pay out to or nothing to pay;
 		// just treat the whole value as slashed.
 		T::Slash::on_unbalanced(slashed_imbalance);
-		return
+		return;
 	}
 
 	// take rewards out of the slashed imbalance.

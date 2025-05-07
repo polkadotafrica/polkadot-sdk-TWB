@@ -140,8 +140,9 @@ impl<T: Config> StakingLedger<T> {
 	pub(crate) fn paired_account(account: StakingAccount<T::AccountId>) -> Option<T::AccountId> {
 		match account {
 			StakingAccount::Stash(stash) => <Bonded<T>>::get(stash),
-			StakingAccount::Controller(controller) =>
-				<Ledger<T>>::get(&controller).map(|ledger| ledger.stash),
+			StakingAccount::Controller(controller) => {
+				<Ledger<T>>::get(&controller).map(|ledger| ledger.stash)
+			},
 		}
 	}
 
@@ -163,8 +164,9 @@ impl<T: Config> StakingLedger<T> {
 	/// stash has a controller which is bonding a ledger associated with another stash.
 	pub(crate) fn get(account: StakingAccount<T::AccountId>) -> Result<StakingLedger<T>, Error<T>> {
 		let (stash, controller) = match account {
-			StakingAccount::Stash(stash) =>
-				(stash.clone(), <Bonded<T>>::get(&stash).ok_or(Error::<T>::NotStash)?),
+			StakingAccount::Stash(stash) => {
+				(stash.clone(), <Bonded<T>>::get(&stash).ok_or(Error::<T>::NotStash)?)
+			},
 			StakingAccount::Controller(controller) => (
 				Ledger::<T>::get(&controller)
 					.map(|l| l.stash)
@@ -202,8 +204,9 @@ impl<T: Config> StakingLedger<T> {
 	) -> Option<RewardDestination<T::AccountId>> {
 		let stash = match account {
 			StakingAccount::Stash(stash) => Some(stash),
-			StakingAccount::Controller(controller) =>
-				Self::paired_account(StakingAccount::Controller(controller)),
+			StakingAccount::Controller(controller) => {
+				Self::paired_account(StakingAccount::Controller(controller))
+			},
 		};
 
 		if let Some(stash) = stash {
@@ -236,7 +239,7 @@ impl<T: Config> StakingLedger<T> {
 	/// this helper function.
 	pub(crate) fn update(self) -> Result<(), Error<T>> {
 		if !<Bonded<T>>::contains_key(&self.stash) {
-			return Err(Error::<T>::NotStash)
+			return Err(Error::<T>::NotStash);
 		}
 
 		// We skip locking virtual stakers.
@@ -262,7 +265,7 @@ impl<T: Config> StakingLedger<T> {
 	/// It sets the reward preferences for the bonded stash.
 	pub(crate) fn bond(self, payee: RewardDestination<T::AccountId>) -> Result<(), Error<T>> {
 		if <Bonded<T>>::contains_key(&self.stash) {
-			return Err(Error::<T>::AlreadyBonded)
+			return Err(Error::<T>::AlreadyBonded);
 		}
 
 		<Payee<T>>::insert(&self.stash, payee);
@@ -273,7 +276,7 @@ impl<T: Config> StakingLedger<T> {
 	/// Sets the ledger Payee.
 	pub(crate) fn set_payee(self, payee: RewardDestination<T::AccountId>) -> Result<(), Error<T>> {
 		if !<Bonded<T>>::contains_key(&self.stash) {
-			return Err(Error::<T>::NotStash)
+			return Err(Error::<T>::NotStash);
 		}
 
 		<Payee<T>>::insert(&self.stash, payee);
@@ -384,7 +387,7 @@ impl<T: Config> StakingLedger<T> {
 			}
 
 			if unlocking_balance >= value {
-				break
+				break;
 			}
 		}
 
@@ -421,7 +424,7 @@ impl<T: Config> StakingLedger<T> {
 		slash_era: EraIndex,
 	) -> BalanceOf<T> {
 		if slash_amount.is_zero() {
-			return Zero::zero()
+			return Zero::zero();
 		}
 
 		use sp_runtime::PerThing as _;
@@ -514,7 +517,7 @@ impl<T: Config> StakingLedger<T> {
 		let mut slashed_unlocking = BTreeMap::<_, _>::new();
 		for i in slash_chunks_priority {
 			if remaining_slash.is_zero() {
-				break
+				break;
 			}
 
 			if let Some(chunk) = self.unlocking.get_mut(i).defensive() {
@@ -522,7 +525,7 @@ impl<T: Config> StakingLedger<T> {
 				// write the new slashed value of this chunk to the map.
 				slashed_unlocking.insert(chunk.era, chunk.value);
 			} else {
-				break
+				break;
 			}
 		}
 
@@ -571,10 +574,10 @@ pub struct StakingLedgerInspect<T: Config> {
 #[cfg(test)]
 impl<T: Config> PartialEq<StakingLedgerInspect<T>> for StakingLedger<T> {
 	fn eq(&self, other: &StakingLedgerInspect<T>) -> bool {
-		self.stash == other.stash &&
-			self.total == other.total &&
-			self.active == other.active &&
-			self.unlocking == other.unlocking
+		self.stash == other.stash
+			&& self.total == other.total
+			&& self.active == other.active
+			&& self.unlocking == other.unlocking
 	}
 }
 

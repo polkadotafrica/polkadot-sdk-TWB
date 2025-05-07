@@ -829,7 +829,7 @@ impl<T: Config> Pallet<T> {
 												&h,
 												&err
 											);
-											return None
+											return None;
 										}
 										weight.saturating_accrue(T::DbWeight::get().reads(1));
 										log::info!("Migrated call by hash, hash: {:?}", h);
@@ -932,7 +932,7 @@ impl<T: Config> Pallet<T> {
 		};
 
 		if when <= now {
-			return Err(Error::<T>::TargetBlockNumberInPast.into())
+			return Err(Error::<T>::TargetBlockNumberInPast.into());
 		}
 
 		Ok(when)
@@ -966,7 +966,7 @@ impl<T: Config> Pallet<T> {
 				agenda[hole_index] = Some(what);
 				hole_index as u32
 			} else {
-				return Err((DispatchError::Exhausted, what))
+				return Err((DispatchError::Exhausted, what));
 			}
 		};
 		Agenda::<T>::insert(when, agenda);
@@ -1048,7 +1048,7 @@ impl<T: Config> Pallet<T> {
 			Self::deposit_event(Event::Canceled { when, index });
 			Ok(())
 		} else {
-			return Err(Error::<T>::NotFound.into())
+			return Err(Error::<T>::NotFound.into());
 		}
 	}
 
@@ -1059,7 +1059,7 @@ impl<T: Config> Pallet<T> {
 		let new_time = Self::resolve_time(new_time)?;
 
 		if new_time == when {
-			return Err(Error::<T>::RescheduleNoChange.into())
+			return Err(Error::<T>::RescheduleNoChange.into());
 		}
 
 		let task = Agenda::<T>::try_mutate(when, |agenda| {
@@ -1083,7 +1083,7 @@ impl<T: Config> Pallet<T> {
 	) -> Result<TaskAddress<BlockNumberFor<T>>, DispatchError> {
 		// ensure id it is unique
 		if Lookup::<T>::contains_key(&id) {
-			return Err(Error::<T>::FailedToSchedule.into())
+			return Err(Error::<T>::FailedToSchedule.into());
 		}
 
 		let when = Self::resolve_time(when)?;
@@ -1133,7 +1133,7 @@ impl<T: Config> Pallet<T> {
 				Self::deposit_event(Event::Canceled { when, index });
 				Ok(())
 			} else {
-				return Err(Error::<T>::NotFound.into())
+				return Err(Error::<T>::NotFound.into());
 			}
 		})
 	}
@@ -1148,7 +1148,7 @@ impl<T: Config> Pallet<T> {
 		let (when, index) = lookup.ok_or(Error::<T>::NotFound)?;
 
 		if new_time == when {
-			return Err(Error::<T>::RescheduleNoChange.into())
+			return Err(Error::<T>::RescheduleNoChange.into());
 		}
 
 		let task = Agenda::<T>::try_mutate(when, |agenda| {
@@ -1187,7 +1187,7 @@ impl<T: Config> Pallet<T> {
 	/// Service up to `max` agendas queue starting from earliest incompletely executed agenda.
 	fn service_agendas(weight: &mut WeightMeter, now: BlockNumberFor<T>, max: u32) {
 		if weight.try_consume(T::WeightInfo::service_agendas_base()).is_err() {
-			return
+			return;
 		}
 
 		let mut incomplete_since = now + One::one();
@@ -1249,7 +1249,7 @@ impl<T: Config> Pallet<T> {
 			if !weight.can_consume(base_weight) {
 				postponed += 1;
 				agenda[agenda_index as usize] = Some(task);
-				break
+				break;
 			}
 			let result = Self::service_task(weight, now, when, agenda_index, *executed == 0, task);
 			agenda[agenda_index as usize] = match result {
@@ -1313,7 +1313,7 @@ impl<T: Config> Pallet<T> {
 					task.maybe_periodic.is_some(),
 				));
 
-				return Err((Unavailable, Some(task)))
+				return Err((Unavailable, Some(task)));
 			},
 		};
 
@@ -1357,10 +1357,11 @@ impl<T: Config> Pallet<T> {
 					}
 					let wake = now.saturating_add(period);
 					match Self::place_task(wake, task) {
-						Ok(new_address) =>
+						Ok(new_address) => {
 							if let Some(retry_config) = maybe_retry_config {
 								Retries::<T>::insert(new_address, retry_config);
-							},
+							}
+						},
 						Err((_, task)) => {
 							// TODO: Leave task in storage somewhere for it to be rescheduled
 							// manually.
@@ -1401,14 +1402,15 @@ impl<T: Config> Pallet<T> {
 		let max_weight = base_weight.saturating_add(call_weight);
 
 		if !weight.can_consume(max_weight) {
-			return Err(())
+			return Err(());
 		}
 
 		let dispatch_origin = origin.into();
 		let (maybe_actual_call_weight, result) = match call.dispatch(dispatch_origin) {
 			Ok(post_info) => (post_info.actual_weight, Ok(())),
-			Err(error_and_info) =>
-				(error_and_info.post_info.actual_weight, Err(error_and_info.error)),
+			Err(error_and_info) => {
+				(error_and_info.post_info.actual_weight, Err(error_and_info.error))
+			},
 		};
 		let call_weight = maybe_actual_call_weight.unwrap_or(call_weight);
 		let _ = weight.try_consume(base_weight);

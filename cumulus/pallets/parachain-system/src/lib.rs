@@ -187,7 +187,8 @@ pub mod ump_constants {
 	/// Also the number it gets divided by when decreased.
 	pub const EXPONENTIAL_FEE_BASE: FixedU128 = FixedU128::from_rational(105, 100); // 1.05
 	/// The base number message size in KB is multiplied by before increasing the fee factor.
-	pub const MESSAGE_SIZE_FEE_BASE: FixedU128 = FixedU128::from_rational(1, 1000); // 0.001
+	pub const MESSAGE_SIZE_FEE_BASE: FixedU128 = FixedU128::from_rational(1, 1000);
+	// 0.001
 }
 
 /// Trait for selecting the next core to build the candidate for.
@@ -327,7 +328,7 @@ pub mod pallet {
 						false,
 						"host configuration is promised to set until `on_finalize`; qed",
 					);
-					return
+					return;
 				},
 			};
 
@@ -342,7 +343,7 @@ pub mod pallet {
 						"relevant messaging state is promised to be set until `on_finalize`; \
 							qed",
 					);
-					return
+					return;
 				},
 			};
 
@@ -363,7 +364,7 @@ pub mod pallet {
 							"relevant messaging state is promised to be set until `on_finalize`; \
 								qed",
 						);
-						return (0, 0)
+						return (0, 0);
 					},
 				};
 
@@ -1063,7 +1064,7 @@ impl<T: Config> GetChannelInfo for Pallet<T> {
 		let channels = match RelevantMessagingState::<T>::get() {
 			None => {
 				log::warn!("calling `get_channel_status` with no RelevantMessagingState?!");
-				return ChannelStatus::Closed
+				return ChannelStatus::Closed;
 			},
 			Some(d) => d.egress_channels,
 		};
@@ -1080,7 +1081,7 @@ impl<T: Config> GetChannelInfo for Pallet<T> {
 		let meta = &channels[index].1;
 		if meta.msg_count + 1 > meta.max_capacity {
 			// The channel is at its capacity. Skip it for now.
-			return ChannelStatus::Full
+			return ChannelStatus::Full;
 		}
 		let max_size_now = meta.max_total_size - meta.total_size;
 		let max_size_ever = meta.max_message_size;
@@ -1602,7 +1603,7 @@ impl<T: Config> Pallet<T> {
 		// However, changing this setting is expected to be rare.
 		if let Some(cfg) = HostConfiguration::<T>::get() {
 			if message_len > cfg.max_upward_message_size as usize {
-				return Err(MessageSendError::TooBig)
+				return Err(MessageSendError::TooBig);
 			}
 			let threshold =
 				cfg.max_upward_queue_size.saturating_div(ump_constants::THRESHOLD_FACTOR);

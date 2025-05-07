@@ -506,7 +506,7 @@ impl Notifications {
 		let mut entry = if let Entry::Occupied(entry) = self.peers.entry((*peer_id, set_id)) {
 			entry
 		} else {
-			return
+			return;
 		};
 
 		match mem::replace(entry.get_mut(), PeerState::Poisoned) {
@@ -586,7 +586,7 @@ impl Notifications {
 						target: LOG_TARGET,
 						"State mismatch in libp2p: no entry in incoming for incoming peer"
 					);
-					return
+					return;
 				};
 
 				inc.alive = false;
@@ -632,7 +632,7 @@ impl Notifications {
 				trace!(target: LOG_TARGET, "Libp2p <= Dial {}", entry.key().0);
 				self.events.push_back(ToSwarm::Dial { opts: entry.key().0.into() });
 				entry.insert(PeerState::Requested);
-				return
+				return;
 			},
 		};
 
@@ -801,7 +801,7 @@ impl Notifications {
 			Entry::Vacant(entry) => {
 				trace!(target: LOG_TARGET, "PSM => Drop({}, {:?}): Already disabled.",
 					entry.key().0, set_id);
-				return
+				return;
 			},
 		};
 
@@ -913,7 +913,7 @@ impl Notifications {
 	fn peerset_report_preaccept(&mut self, index: IncomingIndex) {
 		let Some(pos) = self.incoming.iter().position(|i| i.incoming_id == index) else {
 			error!(target: LOG_TARGET, "PSM => Preaccept({:?}): Invalid index", index);
-			return
+			return;
 		};
 
 		trace!(
@@ -955,7 +955,7 @@ impl Notifications {
 				(pos, self.incoming.get(pos))
 			} else {
 				error!(target: LOG_TARGET, "PSM => Accept({:?}): Invalid index", index);
-				return
+				return;
 			};
 
 		let Some(incoming) = incoming else {
@@ -985,7 +985,7 @@ impl Notifications {
 			}
 
 			self.incoming.remove(pos);
-			return
+			return;
 		}
 
 		let state = match self.peers.get_mut(&(incoming.peer_id, incoming.set_id)) {
@@ -999,7 +999,7 @@ impl Notifications {
 					index,
 				);
 				self.incoming.remove(pos);
-				return
+				return;
 			},
 		};
 
@@ -1019,7 +1019,7 @@ impl Notifications {
 					);
 
 					self.incoming.remove(pos);
-					return
+					return;
 				} else if index > incoming_index {
 					error!(
 						target: LOG_TARGET,
@@ -1029,7 +1029,7 @@ impl Notifications {
 
 					self.incoming.remove(pos);
 					debug_assert!(false);
-					return
+					return;
 				}
 
 				// while the substream was being validated by the protocol, `Peerset` had request
@@ -1049,7 +1049,7 @@ impl Notifications {
 						peerset_rejected,
 						incoming_index,
 					};
-					return self.report_reject(index).map_or((), |_| ())
+					return self.report_reject(index).map_or((), |_| ());
 				}
 
 				trace!(
@@ -1120,7 +1120,7 @@ impl Notifications {
 			self.incoming.remove(pos)
 		} else {
 			error!(target: LOG_TARGET, "PSM => Reject({:?}): Invalid index", index);
-			return None
+			return None;
 		};
 
 		if !incoming.alive {
@@ -1132,7 +1132,7 @@ impl Notifications {
 				incoming.set_id,
 			);
 
-			return None
+			return None;
 		}
 
 		let state = match self.peers.get_mut(&(incoming.peer_id, incoming.set_id)) {
@@ -1145,7 +1145,7 @@ impl Notifications {
 					incoming.set_id,
 					index,
 				);
-				return None
+				return None;
 			},
 		};
 
@@ -1158,7 +1158,7 @@ impl Notifications {
 						"PSM => Reject({:?}, {}, {:?}): Ignoring obsolete incoming index, we are already awaiting {:?}.",
 						index, incoming.peer_id, incoming.set_id, incoming_index
 					);
-					return None
+					return None;
 				} else if index > incoming_index {
 					error!(
 						target: LOG_TARGET,
@@ -1166,7 +1166,7 @@ impl Notifications {
 						index, incoming.peer_id, incoming.set_id, incoming_index
 					);
 					debug_assert!(false);
-					return None
+					return None;
 				}
 
 				trace!(target: LOG_TARGET, "PSM => Reject({:?}, {}, {:?}): Rejecting connections.",
@@ -1263,8 +1263,8 @@ impl NetworkBehaviour for Notifications {
 				for set_id in (0..self.notif_protocols.len()).map(SetId::from) {
 					match self.peers.entry((peer_id, set_id)).or_insert(PeerState::Poisoned) {
 						// Requested | PendingRequest => Enabled
-						st @ &mut PeerState::Requested |
-						st @ &mut PeerState::PendingRequest { .. } => {
+						st @ &mut PeerState::Requested
+						| st @ &mut PeerState::PendingRequest { .. } => {
 							trace!(target: LOG_TARGET,
 								"Libp2p => Connected({}, {:?}, {:?}): Connection was requested by PSM.",
 								peer_id, set_id, endpoint
@@ -1304,10 +1304,10 @@ impl NetworkBehaviour for Notifications {
 
 						// In all other states, add this new connection to the list of closed
 						// inactive connections.
-						PeerState::Incoming { connections, .. } |
-						PeerState::Disabled { connections, .. } |
-						PeerState::DisabledPendingEnable { connections, .. } |
-						PeerState::Enabled { connections, .. } => {
+						PeerState::Incoming { connections, .. }
+						| PeerState::Disabled { connections, .. }
+						| PeerState::DisabledPendingEnable { connections, .. }
+						| PeerState::Enabled { connections, .. } => {
 							trace!(target: LOG_TARGET,
 								"Libp2p => Connected({}, {:?}, {:?}, {:?}): Secondary connection. Leaving closed.",
 								peer_id, set_id, endpoint, connection_id);
@@ -1325,7 +1325,7 @@ impl NetworkBehaviour for Notifications {
 					} else {
 						error!(target: LOG_TARGET, "inject_connection_closed: State mismatch in the custom protos handler");
 						debug_assert!(false);
-						return
+						return;
 					};
 
 					match mem::replace(entry.get_mut(), PeerState::Poisoned) {
@@ -1593,9 +1593,9 @@ impl NetworkBehaviour for Notifications {
 							}
 						},
 
-						PeerState::Requested |
-						PeerState::PendingRequest { .. } |
-						PeerState::Backoff { .. } => {
+						PeerState::Requested
+						| PeerState::PendingRequest { .. }
+						| PeerState::Backoff { .. } => {
 							// This is a serious bug either in this state machine or in libp2p.
 							error!(target: LOG_TARGET,
 								"`inject_connection_closed` called for unknown peer {}",
@@ -1629,8 +1629,8 @@ impl NetworkBehaviour for Notifications {
 
 								// "Basic" situation: we failed to reach a peer that the peerset
 								// requested.
-								st @ PeerState::Requested |
-								st @ PeerState::PendingRequest { .. } => {
+								st @ PeerState::Requested
+								| st @ PeerState::PendingRequest { .. } => {
 									trace!(target: LOG_TARGET, "PSM <= Dropped({}, {:?})", peer_id, set_id);
 									self.protocol_controller_handles[usize::from(set_id)]
 										.dropped(peer_id);
@@ -1639,7 +1639,9 @@ impl NetworkBehaviour for Notifications {
 									let ban_duration = match st {
 										PeerState::PendingRequest { timer_deadline, .. }
 											if timer_deadline > now =>
-											cmp::max(timer_deadline - now, Duration::from_secs(5)),
+										{
+											cmp::max(timer_deadline - now, Duration::from_secs(5))
+										},
 										_ => Duration::from_secs(5),
 									};
 
@@ -1662,10 +1664,10 @@ impl NetworkBehaviour for Notifications {
 
 								// We can still get dial failures even if we are already connected
 								// to the peer, as an extra diagnostic for an earlier attempt.
-								st @ PeerState::Disabled { .. } |
-								st @ PeerState::Enabled { .. } |
-								st @ PeerState::DisabledPendingEnable { .. } |
-								st @ PeerState::Incoming { .. } => {
+								st @ PeerState::Disabled { .. }
+								| st @ PeerState::Enabled { .. }
+								| st @ PeerState::DisabledPendingEnable { .. }
+								| st @ PeerState::Incoming { .. } => {
 									*entry.into_mut() = st;
 								},
 
@@ -1717,7 +1719,7 @@ impl NetworkBehaviour for Notifications {
 						"OpenDesiredByRemote: State mismatch in the custom protos handler"
 					);
 					debug_assert!(false);
-					return
+					return;
 				};
 
 				match mem::replace(entry.get_mut(), PeerState::Poisoned) {
@@ -1792,8 +1794,8 @@ impl NetworkBehaviour for Notifications {
 								// more to do.
 								debug_assert!(matches!(
 									connec_state,
-									ConnectionState::OpenDesiredByRemote |
-										ConnectionState::Closing | ConnectionState::Opening
+									ConnectionState::OpenDesiredByRemote
+										| ConnectionState::Closing | ConnectionState::Opening
 								));
 							}
 						} else {
@@ -1922,7 +1924,7 @@ impl NetworkBehaviour for Notifications {
 				} else {
 					error!(target: LOG_TARGET, "CloseDesired: State mismatch in the custom protos handler");
 					debug_assert!(false);
-					return
+					return;
 				};
 
 				if reason == CloseReason::ProtocolMisbehavior {
@@ -1947,12 +1949,12 @@ impl NetworkBehaviour for Notifications {
 							error!(target: LOG_TARGET,
 								"CloseDesired: State mismatch in the custom protos handler");
 							debug_assert!(false);
-							return
+							return;
 						};
 
 						if matches!(connections[pos].1, ConnectionState::Closing) {
 							*entry.into_mut() = PeerState::Enabled { connections };
-							return
+							return;
 						}
 
 						debug_assert!(matches!(connections[pos].1, ConnectionState::Open(_)));
@@ -2004,8 +2006,8 @@ impl NetworkBehaviour for Notifications {
 
 					// All connections in `Disabled` and `DisabledPendingEnable` have been sent a
 					// `Close` message already, and as such ignore any `CloseDesired` message.
-					state @ PeerState::Disabled { .. } |
-					state @ PeerState::DisabledPendingEnable { .. } => {
+					state @ PeerState::Disabled { .. }
+					| state @ PeerState::DisabledPendingEnable { .. } => {
 						*entry.into_mut() = state;
 					},
 					state => {
@@ -2025,10 +2027,10 @@ impl NetworkBehaviour for Notifications {
 
 				match self.peers.get_mut(&(peer_id, set_id)) {
 					// Move the connection from `Closing` to `Closed`.
-					Some(PeerState::Incoming { connections, .. }) |
-					Some(PeerState::DisabledPendingEnable { connections, .. }) |
-					Some(PeerState::Disabled { connections, .. }) |
-					Some(PeerState::Enabled { connections, .. }) => {
+					Some(PeerState::Incoming { connections, .. })
+					| Some(PeerState::DisabledPendingEnable { connections, .. })
+					| Some(PeerState::Disabled { connections, .. })
+					| Some(PeerState::Enabled { connections, .. }) => {
 						if let Some((_, connec_state)) = connections.iter_mut().find(|(c, s)| {
 							*c == connection_id && matches!(s, ConnectionState::Closing)
 						}) {
@@ -2093,8 +2095,8 @@ impl NetworkBehaviour for Notifications {
 							*connec_state = ConnectionState::Open(notifications_sink);
 						} else if let Some((_, connec_state)) =
 							connections.iter_mut().find(|(c, s)| {
-								*c == connection_id &&
-									matches!(s, ConnectionState::OpeningThenClosing)
+								*c == connection_id
+									&& matches!(s, ConnectionState::OpeningThenClosing)
 							}) {
 							*connec_state = ConnectionState::Closing;
 						} else {
@@ -2104,9 +2106,9 @@ impl NetworkBehaviour for Notifications {
 						}
 					},
 
-					Some(PeerState::Incoming { connections, .. }) |
-					Some(PeerState::DisabledPendingEnable { connections, .. }) |
-					Some(PeerState::Disabled { connections, .. }) => {
+					Some(PeerState::Incoming { connections, .. })
+					| Some(PeerState::DisabledPendingEnable { connections, .. })
+					| Some(PeerState::Disabled { connections, .. }) => {
 						if let Some((_, connec_state)) = connections.iter_mut().find(|(c, s)| {
 							*c == connection_id && matches!(s, ConnectionState::OpeningThenClosing)
 						}) {
@@ -2139,7 +2141,7 @@ impl NetworkBehaviour for Notifications {
 				} else {
 					error!(target: LOG_TARGET, "OpenResultErr: State mismatch in the custom protos handler");
 					debug_assert!(false);
-					return
+					return;
 				};
 
 				match mem::replace(entry.get_mut(), PeerState::Poisoned) {
@@ -2155,8 +2157,8 @@ impl NetworkBehaviour for Notifications {
 							*connec_state = ConnectionState::Closed;
 						} else if let Some((_, connec_state)) =
 							connections.iter_mut().find(|(c, s)| {
-								*c == connection_id &&
-									matches!(s, ConnectionState::OpeningThenClosing)
+								*c == connection_id
+									&& matches!(s, ConnectionState::OpeningThenClosing)
 							}) {
 							*connec_state = ConnectionState::Closing;
 						} else {
@@ -2180,17 +2182,17 @@ impl NetworkBehaviour for Notifications {
 							*entry.into_mut() = PeerState::Enabled { connections };
 						}
 					},
-					mut state @ PeerState::Incoming { .. } |
-					mut state @ PeerState::DisabledPendingEnable { .. } |
-					mut state @ PeerState::Disabled { .. } => {
+					mut state @ PeerState::Incoming { .. }
+					| mut state @ PeerState::DisabledPendingEnable { .. }
+					| mut state @ PeerState::Disabled { .. } => {
 						match &mut state {
-							PeerState::Incoming { connections, .. } |
-							PeerState::Disabled { connections, .. } |
-							PeerState::DisabledPendingEnable { connections, .. } => {
+							PeerState::Incoming { connections, .. }
+							| PeerState::Disabled { connections, .. }
+							| PeerState::DisabledPendingEnable { connections, .. } => {
 								if let Some((_, connec_state)) =
 									connections.iter_mut().find(|(c, s)| {
-										*c == connection_id &&
-											matches!(s, ConnectionState::OpeningThenClosing)
+										*c == connection_id
+											&& matches!(s, ConnectionState::OpeningThenClosing)
 									}) {
 									*connec_state = ConnectionState::Closing;
 								} else {
@@ -2264,7 +2266,7 @@ impl NetworkBehaviour for Notifications {
 
 	fn poll(&mut self, cx: &mut Context) -> Poll<ToSwarm<Self::ToSwarm, THandlerInEvent<Self>>> {
 		if let Some(event) = self.events.pop_front() {
-			return Poll::Ready(event)
+			return Poll::Ready(event);
 		}
 
 		// Poll for instructions from the protocol controllers.
@@ -2287,7 +2289,7 @@ impl NetworkBehaviour for Notifications {
 						target: LOG_TARGET,
 						"Protocol controllers receiver stream has returned `None`. Ignore this error if the node is shutting down.",
 					);
-					break
+					break;
 				},
 				Poll::Pending => break,
 			}
@@ -2300,14 +2302,14 @@ impl NetworkBehaviour for Notifications {
 					NotificationCommand::SetHandshake(handshake) => {
 						self.set_notif_protocol_handshake(set_id.into(), handshake);
 					},
-					NotificationCommand::OpenSubstream(_peer) |
-					NotificationCommand::CloseSubstream(_peer) => {
+					NotificationCommand::OpenSubstream(_peer)
+					| NotificationCommand::CloseSubstream(_peer) => {
 						todo!("substream control not implemented");
 					},
 				},
 				Poll::Ready(None) => {
 					error!(target: LOG_TARGET, "Protocol command streams have been shut down");
-					break
+					break;
 				},
 				Poll::Pending => break,
 			}
@@ -2325,7 +2327,7 @@ impl NetworkBehaviour for Notifications {
 				},
 				Err(_) => {
 					error!(target: LOG_TARGET, "Protocol has shut down");
-					break
+					break;
 				},
 			}
 		}
@@ -2389,7 +2391,7 @@ impl NetworkBehaviour for Notifications {
 		}
 
 		if let Some(event) = self.events.pop_front() {
-			return Poll::Ready(event)
+			return Poll::Ready(event);
 		}
 
 		Poll::Pending
@@ -2415,8 +2417,9 @@ mod tests {
 				(ConnectionState::Closing, ConnectionState::Closing) => true,
 				(ConnectionState::Opening, ConnectionState::Opening) => true,
 				(ConnectionState::OpeningThenClosing, ConnectionState::OpeningThenClosing) => true,
-				(ConnectionState::OpenDesiredByRemote, ConnectionState::OpenDesiredByRemote) =>
-					true,
+				(ConnectionState::OpenDesiredByRemote, ConnectionState::OpenDesiredByRemote) => {
+					true
+				},
 				(ConnectionState::Open(_), ConnectionState::Open(_)) => true,
 				_ => false,
 			}
@@ -4006,7 +4009,7 @@ mod tests {
 				.await;
 
 				if notif.peers.get(&(peer, set_id)).is_none() {
-					break
+					break;
 				}
 			}
 		})
@@ -4118,7 +4121,7 @@ mod tests {
 					assert!(std::matches!(connections[0], (_, ConnectionState::Closing)));
 
 					if timer_deadline != &prev_instant {
-						break
+						break;
 					}
 				} else {
 					panic!("invalid state");

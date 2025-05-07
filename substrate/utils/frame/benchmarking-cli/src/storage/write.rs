@@ -114,13 +114,13 @@ impl StorageCmd {
 							state_col,
 							None,
 						) {
-							break
+							break;
 						}
 					}
 
 					batched_keys.push((k.to_vec(), new_v.to_vec()));
 					if batched_keys.len() < self.params.batch_size {
-						continue
+						continue;
 					}
 
 					// For every batched write use a different trie instance and recorder, so we
@@ -167,13 +167,13 @@ impl StorageCmd {
 							state_col,
 							Some(&info),
 						) {
-							break
+							break;
 						}
 					}
 					batched_keys.push((key.0, new_v.to_vec()));
 
 					if batched_keys.len() < self.params.batch_size {
-						continue
+						continue;
 					}
 
 					let trie = build_trie_backend(
@@ -281,7 +281,7 @@ fn check_new_value<Block: BlockT>(
 			db.sanitize_key(&mut k);
 			if db.get(col, &k).is_some() {
 				trace!("Benchmark-store key creation: Key collision detected, retry");
-				return false
+				return false;
 			}
 		}
 	}
