@@ -1,27 +1,29 @@
 name: Pallet Tests
+
 on:
   push:
     branches: [ add-pallet-auto-tasks ]
   pull_request:
     branches: [ State-Driven-Task ]
+
 env:
   CARGO_TERM_COLOR: always
+  RUSTFLAGS: -Dwarnings
+
 jobs:
   test:
     name: Test Pallet
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4  # Updated from v3
       
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master  # More modern alternative
         with:
           toolchain: nightly
-          target: wasm32-unknown-unknown
+          targets: wasm32-unknown-unknown
           components: rustfmt, clippy
-          override: true
-          profile: minimal
-      
+          
       - name: Cache Dependencies
         uses: actions/cache@v3
         with:
@@ -32,26 +34,21 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           
       - name: Check Format
-        run: |
-          cd substrate/frame/pallet-auto-tasks
-          cargo fmt -- --check
+        working-directory: substrate/frame/pallet-auto-tasks
+        run: cargo fmt -- --check
           
       - name: Clippy Check
-        run: |
-          cd substrate/frame/pallet-auto-tasks
-          cargo clippy -- -D warnings
+        working-directory: substrate/frame/pallet-auto-tasks
+        run: cargo clippy -- -D warnings
           
       - name: Run Tests
-        run: |
-          cd substrate/frame/pallet-auto-tasks
-          cargo test
+        working-directory: substrate/frame/pallet-auto-tasks
+        run: cargo test
           
       - name: Run Tests with Experimental Feature
-        run: |
-          cd substrate/frame/pallet-auto-tasks
-          cargo test --features experimental
+        working-directory: substrate/frame/pallet-auto-tasks
+        run: cargo test --features experimental
           
       - name: Build Documentation
-        run: |
-          cd substrate/frame/pallet-auto-tasks
-          cargo doc --no-deps
+        working-directory: substrate/frame/pallet-auto-tasks
+        run: cargo doc --no-deps
