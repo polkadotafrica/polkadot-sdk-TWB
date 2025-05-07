@@ -8,39 +8,93 @@ license = "Apache-2.0"
 homepage = "https://github.com/polkadotafrica/polkadot-sdk-TWB"
 repository = "https://github.com/polkadotafrica/polkadot-sdk-TWB"
 
-[workspace]  # <--- This is the key addition to make it independent
+# Workspace declaration ensures proper dependency resolution
+[workspace]
 
+# Documentation generator configuration
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
+# ========================
+# Production Dependencies
+# ========================
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
-scale-info = { version = "2.5.0", default-features = false, features = ["derive"] }
-log = { version = "0.4.20", default-features = false }
+# Core encoding/decoding
+codec = { 
+    package = "parity-scale-codec", 
+    version = "3.6.1", 
+    default-features = false, 
+    features = ["derive"] 
+}
 
-# Substrate dependencies
-frame-support = { path = "../support", default-features = false }
-frame-system = { path = "../system", default-features = false }
-sp-std = { path = "../../primitives/std", default-features = false }
+# Type information
+scale-info = { 
+    version = "2.5.0", 
+    default-features = false, 
+    features = ["derive"] 
+}
 
+# Logging utility
+log = { 
+    version = "0.4.20", 
+    default-features = false 
+}
+
+# Substrate Framework Dependencies
+frame-support = { 
+    path = "../support", 
+    default-features = false 
+}
+frame-system = { 
+    path = "../system", 
+    default-features = false 
+}
+sp-std = { 
+    path = "../../primitives/std", 
+    default-features = false 
+}
+
+# ========================
+# Development Dependencies
+# ========================
 [dev-dependencies]
 sp-core = { path = "../../primitives/core" }
 sp-io = { path = "../../primitives/io" }
 sp-runtime = { path = "../../primitives/runtime" }
 
+# ========================
+# Feature Configuration
+# ========================
 [features]
+# Standard compilation (required for native execution)
 default = ["std"]
 std = [
+    # Enable std for all dependencies
     "codec/std",
     "scale-info/std",
-    "log/std",
     "frame-support/std",
     "frame-system/std",
     "sp-std/std",
+    "log/std",
 ]
-experimental = []
+
+# -------------------------------------------------------------------
+# OPTIONAL FEATURES (Must be explicitly enabled during compilation)
+# -------------------------------------------------------------------
+
+# Enables runtime benchmarking (for weight calculation)
+# Usage: cargo build --features runtime-benchmarks
 runtime-benchmarks = [
     "frame-support/runtime-benchmarks",
     "frame-system/runtime-benchmarks",
 ]
-try-runtime = ["frame-support/try-runtime"]
+
+# Enables try-runtime functionality (for testing runtime upgrades)
+# Usage: cargo build --features try-runtime
+try-runtime = [
+    "frame-support/try-runtime"
+]
+
+# Experimental/unstable features (use with caution)
+# Usage: cargo build --features experimental
+experimental = []

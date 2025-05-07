@@ -76,7 +76,7 @@ impl frame_support::traits::Task for RuntimeTask {
 
 impl pallet_auto_tasks::Config for Test {
     type RuntimeTask = RuntimeTask;
-    type WeightInfo = ();
+    type WeightInfo = pallet_auto_tasks::weights::SubstrateWeight<Test>;
 }
 
 // Build genesis storage according to the mock runtime.
