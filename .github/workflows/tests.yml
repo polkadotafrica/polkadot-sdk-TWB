@@ -31,17 +31,6 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           
-      - name: Fix Format
-        run: |
-          cd substrate/frame/pallet-auto-tasks
-          cargo fmt
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Fix formatting" || echo "No changes to commit"
-          git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/${{ github.repository }}
-          git push origin HEAD:${{ github.ref }} || echo "No changes to push"
-          
       - name: Check Format
         run: |
           cd substrate/frame/pallet-auto-tasks

@@ -33,13 +33,13 @@ mod message_cleanup_example {
 		// Task to clean up expired messages
 		#[pallet::task_list(Messages::<T>::iter_keys())]
 		#[pallet::task_condition(|msg_id| {
-            if let Some((_, expiry)) = Messages::<T>::get(msg_id) {
-                // Check if message has expired
-                frame_system::Pallet::<T>::block_number() >= expiry
-            } else {
-                false
-            }
-        })]
+			if let Some((_, expiry)) = Messages::<T>::get(msg_id) {
+				// Check if message has expired
+				frame_system::Pallet::<T>::block_number() >= expiry
+			} else {
+				false
+			}
+		})]
 		#[pallet::task_weight(T::WeightInfo::clean_expired_message())]
 		#[pallet::task_index(1)] // Note the unique index
 		pub fn clean_expired_message(msg_id: MessageId) -> DispatchResult {
@@ -116,19 +116,19 @@ mod data_aggregation_example {
 	impl<T: Config> Pallet<T> {
 		// Task to aggregate daily transaction statistics
 		#[pallet::task_list({
-            // Get a list of blocks from the current day that need processing
-            let current_day = Self::calculate_day_number();
-            let processed = DailyProcessedBlocks::<T>::get(current_day);
-            TransactionValues::<T>::iter_keys()
-                .filter(|block_num| !processed.contains(block_num))
-                .collect::<Vec<_>>()
-        })]
+			// Get a list of blocks from the current day that need processing
+			let current_day = Self::calculate_day_number();
+			let processed = DailyProcessedBlocks::<T>::get(current_day);
+			TransactionValues::<T>::iter_keys()
+				.filter(|block_num| !processed.contains(block_num))
+				.collect::<Vec<_>>()
+		})]
 		#[pallet::task_condition(|block_num| {
-            // Only process blocks from completed days
-            let block_day = Self::calculate_day_from_block(*block_num);
-            let current_day = Self::calculate_day_number();
-            block_day < current_day
-        })]
+			// Only process blocks from completed days
+			let block_day = Self::calculate_day_from_block(*block_num);
+			let current_day = Self::calculate_day_number();
+			block_day < current_day
+		})]
 		#[pallet::task_weight(T::WeightInfo::aggregate_daily_stats())]
 		#[pallet::task_index(2)]
 		pub fn aggregate_daily_stats(block_num: BlockNumberFor<T>) -> DispatchResult {
