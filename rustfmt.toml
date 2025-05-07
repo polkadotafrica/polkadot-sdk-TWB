@@ -1,0 +1,4 @@
+# rustfmt.toml
+hard_tabs = true
+max_width = 100
+reorder_imports = true

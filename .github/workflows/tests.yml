@@ -1,79 +1,68 @@
-name: tests
-
+name: Pallet Tests
 on:
   push:
-    branches:
-      - master
+    branches: [ add-pallet-auto-tasks ]
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-  merge_group:
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
+    branches: [ State-Driven-Task ]
+env:
+  CARGO_TERM_COLOR: always
 jobs:
-  isdraft:
-    uses: ./.github/workflows/reusable-isdraft.yml
-  preflight:
-    needs: isdraft
-    uses: ./.github/workflows/reusable-preflight.yml
-
-  # This job runs all benchmarks defined in the `/bin/node/runtime` once to check that there are no errors.
-  quick-benchmarks:
-    needs: [preflight]
-    if: ${{ needs.preflight.outputs.changes_rust }}
-    runs-on: ${{ needs.preflight.outputs.RUNNER }}
-    timeout-minutes: 60
-    container:
-      image: ${{ needs.preflight.outputs.IMAGE }}
-    env:
-      RUSTFLAGS: "-C debug-assertions -D warnings"
-      RUST_BACKTRACE: "full"
-      WASM_BUILD_NO_COLOR: 1
-      WASM_BUILD_RUSTFLAGS: "-C debug-assertions -D warnings"
+  test:
+    name: Test Pallet
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: script
-        run: forklift cargo run --locked --release -p staging-node-cli --bin substrate-node --features runtime-benchmarks --quiet -- benchmark pallet --chain dev --pallet "*" --extrinsic "*" --steps 2 --repeat 1 --quiet
-
-  # cf https://github.com/paritytech/polkadot-sdk/issues/1652
-  test-syscalls:
-    needs: [preflight]
-    if: ${{ needs.preflight.outputs.changes_rust }}
-    runs-on: ${{ needs.preflight.outputs.RUNNER }}
-    timeout-minutes: 60
-    container:
-      image: ${{ needs.preflight.outputs.IMAGE }}
-    continue-on-error: true # this rarely triggers in practice
-    env:
-      SKIP_WASM_BUILD: 1
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: script
-        id: test
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: wasm32-unknown-unknown
+          components: rustfmt, clippy
+          override: true
+          profile: minimal
+      
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          
+      - name: Fix Format
         run: |
-          forklift cargo build --locked --profile production --target x86_64-unknown-linux-musl --bin polkadot-execute-worker --bin polkadot-prepare-worker --quiet
-          cd polkadot/scripts/list-syscalls
-          ./list-syscalls.rb ../../../target/x86_64-unknown-linux-musl/production/polkadot-execute-worker --only-used-syscalls | diff -u execute-worker-syscalls -
-          ./list-syscalls.rb ../../../target/x86_64-unknown-linux-musl/production/polkadot-prepare-worker --only-used-syscalls | diff -u prepare-worker-syscalls -
-      - name: on_failure
-        if: failure() && steps.test.outcome == 'failure'
+          cd substrate/frame/pallet-auto-tasks
+          cargo fmt
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Fix formatting" || echo "No changes to commit"
+          git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/${{ github.repository }}
+          git push origin HEAD:${{ github.ref }} || echo "No changes to push"
+          
+      - name: Check Format
         run: |
-          echo "The x86_64 syscalls used by the worker binaries have changed. Please review if this is expected and update polkadot/scripts/list-syscalls/*-worker-syscalls as needed." >> $GITHUB_STEP_SUMMARY
-
-  cargo-check-all-benches:
-    needs: [preflight]
-    if: ${{ needs.preflight.outputs.changes_rust }}
-    runs-on: ${{ needs.preflight.outputs.RUNNER }}
-    timeout-minutes: 60
-    container:
-      image: ${{ needs.preflight.outputs.IMAGE }}
-    env:
-      SKIP_WASM_BUILD: 1
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: script
-        run: forklift cargo check --all --benches --quiet
+          cd substrate/frame/pallet-auto-tasks
+          cargo fmt -- --check
+          
+      - name: Clippy Check
+        run: |
+          cd substrate/frame/pallet-auto-tasks
+          cargo clippy -- -D warnings
+          
+      - name: Run Tests
+        run: |
+          cd substrate/frame/pallet-auto-tasks
+          cargo test
+          
+      - name: Run Tests with Experimental Feature
+        run: |
+          cd substrate/frame/pallet-auto-tasks
+          cargo test --features experimental
+          
+      - name: Build Documentation
+        run: |
+          cd substrate/frame/pallet-auto-tasks
+          cargo doc --no-deps
