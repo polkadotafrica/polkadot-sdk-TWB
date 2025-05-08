@@ -2,9 +2,9 @@ name: Pallet Tests
 
 on:
   push:
-    branches: [ add-pallet-auto-tasks ]
+    branches: [add-pallet-auto-tasks]
   pull_request:
-    branches: [ State-Driven-Task ]
+    branches: [State-Driven-Task]
 
 env:
   CARGO_TERM_COLOR: always
@@ -34,6 +34,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
             
+      - name: Check Compilation
+        working-directory: substrate/frame/pallet-auto-tasks
+        run: cargo check --all-targets --all-features
+          
       - name: Check Format
         working-directory: substrate/frame/pallet-auto-tasks
         run: cargo fmt --all -- --check
@@ -44,11 +48,7 @@ jobs:
         env:
           RUSTFLAGS: "-Dwarnings"
           
-      - name: Run Weight Tests
-        working-directory: substrate/frame/pallet-auto-tasks
-        run: cargo test --test weight_tests --verbose
-          
-      - name: Run Standard Tests
+      - name: Run Tests
         working-directory: substrate/frame/pallet-auto-tasks
         run: cargo test --verbose --no-fail-fast
           
