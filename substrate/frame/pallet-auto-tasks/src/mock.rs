@@ -6,6 +6,8 @@ use sp_runtime::{
     testing::Header,
     traits::{BlakeTwo256, IdentityLookup},
 };
+use crate::weights::WeightInfo;
+use frame_support::weights::Weight;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -74,9 +76,27 @@ impl frame_support::traits::Task for RuntimeTask {
     }
 }
 
+// Define TestWeightInfo for the tests
+pub struct TestWeightInfo;
+
+impl WeightInfo for TestWeightInfo {
+    fn add_number_into_total() -> Weight {
+        Weight::from_parts(10_000, 0)
+    }
+    
+    fn store_number() -> Weight {
+        Weight::from_parts(5_000, 0)
+    }
+    
+    fn get_totals() -> Weight {
+        Weight::from_parts(2_000, 0)
+    }
+}
+
+// Update Config to use TestWeightInfo instead of SubstrateWeight
 impl pallet_auto_tasks::Config for Test {
     type RuntimeTask = RuntimeTask;
-    type WeightInfo = pallet_auto_tasks::weights::SubstrateWeight<Test>;
+    type WeightInfo = TestWeightInfo;
 }
 
 // Build genesis storage according to the mock runtime.

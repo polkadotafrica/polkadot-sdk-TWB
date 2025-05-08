@@ -43,11 +43,11 @@ jobs:
           
       - name: Run Tests
         working-directory: substrate/frame/pallet-auto-tasks
-        run: cargo test
+        run: cargo test --verbose
           
       - name: Run Tests with Experimental Feature
         working-directory: substrate/frame/pallet-auto-tasks
-        run: cargo test --features experimental
+        run: cargo test --features experimental --verbose
           
       - name: Build Documentation
         working-directory: substrate/frame/pallet-auto-tasks
