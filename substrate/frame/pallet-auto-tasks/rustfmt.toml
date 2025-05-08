@@ -1,0 +1,30 @@
+# Core Formatting Configuration
+edition = "2021"
+style_edition = "2021"
+unstable_features = false
+
+# Code Layout
+hard_tabs = false
+tab_spaces = 4
+max_width = 100
+newline_style = "Unix"
+
+# Imports Organization
+imports_granularity = "Crate"
+group_imports = "StdExternalCrate"
+reorder_imports = true
+
+# Code Style Preferences
+trailing_comma = "Always"
+use_field_init_shorthand = true
+format_code_in_doc_comments = true
+wrap_comments = false
+comment_width = 100
+
+# Error Checking
+error_on_line_overflow = true
+error_on_unformatted = true
+
+# Substrate-Specific Formatting
+reorder_impl_items = false
+spaces_around_ranges = false
