@@ -378,8 +378,8 @@ impl<T: Config> Eras<T> {
 		let e3 = ErasStartSessionIndex::<T>::contains_key(era);
 
 		let active_era = Rotator::<T>::active_era();
-		let e4 = if era.saturating_sub(1) > 0
-			&& era.saturating_sub(1) > active_era.saturating_sub(T::HistoryDepth::get() + 1)
+		let e4 = if era.saturating_sub(1) > 0 &&
+			era.saturating_sub(1) > active_era.saturating_sub(T::HistoryDepth::get() + 1)
 		{
 			// `ErasValidatorReward` is set at active era n for era n-1, and is not set for era 0 in
 			// our tests. Moreover, it cannot be checked for presence in the oldest present era
@@ -787,8 +787,8 @@ impl<T: Config> EraElectionPlanner<T> {
 			);
 
 			debug_assert!(
-				CurrentEra::<T>::get().unwrap_or(0)
-					== ActiveEra::<T>::get().map_or(0, |a| a.index) + 1,
+				CurrentEra::<T>::get().unwrap_or(0) ==
+					ActiveEra::<T>::get().map_or(0, |a| a.index) + 1,
 				"Next era must be already planned."
 			);
 

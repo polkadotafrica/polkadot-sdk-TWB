@@ -290,9 +290,8 @@ where
 			Asset { id: AssetId(inner_location), fun: Fungible(amount) } => {
 				match inner_location.unpack() {
 					// Get the ERC20 contract address of the token.
-					(0, [AccountKey20 { network, key }]) if self.network_matches(network) => {
-						Some((H160(*key), *amount))
-					},
+					(0, [AccountKey20 { network, key }]) if self.network_matches(network) =>
+						Some((H160(*key), *amount)),
 					// If there is no ERC20 contract address in the location then signal to the
 					// gateway that is a native Ether transfer by using
 					// `0x0000000000000000000000000000000000000000` as the token address.
@@ -404,9 +403,8 @@ where
 		}
 
 		let (asset_id, amount) = match reserve_asset {
-			Asset { id: AssetId(inner_location), fun: Fungible(amount) } => {
-				Some((inner_location.clone(), *amount))
-			},
+			Asset { id: AssetId(inner_location), fun: Fungible(amount) } =>
+				Some((inner_location.clone(), *amount)),
 			_ => None,
 		}
 		.ok_or(AssetResolutionFailed)?;

@@ -315,20 +315,18 @@ fn validate_using_artifact(
 		//         [`executor_interface::prepare`].
 		execute_artifact(compiled_artifact_blob, executor_params, params)
 	} {
-		Err(ExecuteError::RuntimeConstruction(wasmerr)) => {
-			return JobResponse::runtime_construction("execute", &wasmerr.to_string())
-		},
+		Err(ExecuteError::RuntimeConstruction(wasmerr)) =>
+			return JobResponse::runtime_construction("execute", &wasmerr.to_string()),
 		Err(err) => return JobResponse::format_invalid("execute", &err.to_string()),
 		Ok(d) => d,
 	};
 
 	let result_descriptor = match ValidationResult::decode(&mut &descriptor_bytes[..]) {
-		Err(err) => {
+		Err(err) =>
 			return JobResponse::format_invalid(
 				"validation result decoding failed",
 				&err.to_string(),
-			)
-		},
+			),
 		Ok(r) => r,
 	};
 
@@ -381,9 +379,8 @@ fn handle_clone(
 			pov_size,
 			execution_timeout,
 		),
-		Err(security::clone::Error::Clone(errno)) => {
-			Ok(Err(internal_error_from_errno("clone", errno)))
-		},
+		Err(security::clone::Error::Clone(errno)) =>
+			Ok(Err(internal_error_from_errno("clone", errno))),
 	}
 }
 

@@ -391,8 +391,7 @@ impl EnvDef {
 
 fn is_valid_special_arg(idx: usize, arg: &FnArg) -> bool {
 	let FnArg::Typed(pat) = arg else { return false };
-	let ident =
-		if let syn::Pat::Ident(ref ident) = *pat.pat { &ident.ident } else { return false };
+	let ident = if let syn::Pat::Ident(ref ident) = *pat.pat { &ident.ident } else { return false };
 	let name_ok = match idx {
 		0 => ident == "ctx" || ident == "_ctx",
 		1 => ident == "memory" || ident == "_memory",

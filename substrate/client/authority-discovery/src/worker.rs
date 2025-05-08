@@ -442,9 +442,9 @@ where
 				"Publishing authority DHT record peer_id='{local_peer_id}' with addresses='{addresses:?}'",
 			);
 
-			if !self.warn_public_addresses
-				&& self.public_addresses.is_empty()
-				&& !has_global_listen_addresses
+			if !self.warn_public_addresses &&
+				self.public_addresses.is_empty() &&
+				!has_global_listen_addresses
 			{
 				self.warn_public_addresses = true;
 
@@ -695,9 +695,8 @@ where
 		// Make sure we don't ever work with an outdated set of authorities
 		// and that we do not update known_authorithies too often.
 		let best_hash = self.client.best_hash().await?;
-		if !self.known_authorities.contains_key(&record_key)
-			&& self
-				.authorities_queried_at
+		if !self.known_authorities.contains_key(&record_key) &&
+			self.authorities_queried_at
 				.map(|authorities_queried_at| authorities_queried_at != best_hash)
 				.unwrap_or(true)
 		{
@@ -933,8 +932,8 @@ where
 					"Found same record for {:?} record creation time {:?}",
 					authority_id, new_record.creation_time
 			);
-			if current_record_info.peers_with_record.len() + new_record.peers_with_record.len()
-				<= DEFAULT_KADEMLIA_REPLICATION_FACTOR
+			if current_record_info.peers_with_record.len() + new_record.peers_with_record.len() <=
+				DEFAULT_KADEMLIA_REPLICATION_FACTOR
 			{
 				current_record_info.peers_with_record.extend(new_record.peers_with_record);
 			}

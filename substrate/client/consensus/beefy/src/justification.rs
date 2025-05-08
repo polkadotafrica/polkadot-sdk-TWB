@@ -33,9 +33,8 @@ pub(crate) fn proof_block_num_and_set_id<Block: BlockT, AuthorityId: AuthorityId
 	proof: &BeefyVersionedFinalityProof<Block, AuthorityId>,
 ) -> (NumberFor<Block>, ValidatorSetId) {
 	match proof {
-		VersionedFinalityProof::V1(sc) => {
-			(sc.commitment.block_number, sc.commitment.validator_set_id)
-		},
+		VersionedFinalityProof::V1(sc) =>
+			(sc.commitment.block_number, sc.commitment.validator_set_id),
 	}
 }
 

@@ -120,9 +120,8 @@ impl<Gas: Default, GasMapper: Fn(Weight) -> Gas> Tracer for CallTracer<Gas, GasM
 		trace.gas_used = (self.gas_mapper)(gas_used);
 
 		trace.error = match error {
-			DispatchError::Module(sp_runtime::ModuleError { message, .. }) => {
-				Some(message.unwrap_or_default().to_string())
-			},
+			DispatchError::Module(sp_runtime::ModuleError { message, .. }) =>
+				Some(message.unwrap_or_default().to_string()),
 			_ => Some(format!("{:?}", error)),
 		};
 

@@ -692,8 +692,8 @@ pub mod pallet {
 
 			// We can use storage to store items using the available block ref_time with the
 			// `set_storage` host function.
-			let max_storage_size: u32 = ((max_block_ref_time
-				/ (<RuntimeCosts as gas::Token<T>>::weight(&RuntimeCosts::SetStorage {
+			let max_storage_size: u32 = ((max_block_ref_time /
+				(<RuntimeCosts as gas::Token<T>>::weight(&RuntimeCosts::SetStorage {
 					new_bytes: max_payload_size,
 					old_bytes: 0,
 				})
@@ -715,8 +715,8 @@ pub mod pallet {
 			// We can use storage to store events using the available block ref_time with the
 			// `deposit_event` host function. The overhead of stored events, which is around 100B,
 			// is not taken into account to simplify calculations, as it does not change much.
-			let max_events_size: u32 = ((max_block_ref_time
-				/ (<RuntimeCosts as gas::Token<T>>::weight(&RuntimeCosts::DepositEvent {
+			let max_events_size: u32 = ((max_block_ref_time /
+				(<RuntimeCosts as gas::Token<T>>::weight(&RuntimeCosts::DepositEvent {
 					num_topic: 0,
 					len: max_payload_size,
 				})
@@ -1568,13 +1568,12 @@ impl<T: Config> Invokable<T> for CallInput<T> {
 		let mut storage_meter =
 			match StorageMeter::new(&origin, common.storage_deposit_limit, common.value) {
 				Ok(meter) => meter,
-				Err(err) => {
+				Err(err) =>
 					return InternalOutput {
 						result: Err(err.into()),
 						gas_meter,
 						storage_deposit: Default::default(),
-					}
-				},
+					},
 			};
 		let schedule = T::Schedule::get();
 		let result = ExecStack::<T, WasmBlob<T>>::run_call(
@@ -1779,7 +1778,7 @@ impl<T: Config> Pallet<T> {
 
 				let (module, deposit) = match result {
 					Ok(result) => result,
-					Err(error) => {
+					Err(error) =>
 						return ContractResult {
 							gas_consumed: Zero::zero(),
 							gas_required: Zero::zero(),
@@ -1787,8 +1786,7 @@ impl<T: Config> Pallet<T> {
 							debug_message: debug_message.unwrap_or(Default::default()).into(),
 							result: Err(error),
 							events: events(),
-						}
-					},
+						},
 				};
 
 				storage_deposit_limit =

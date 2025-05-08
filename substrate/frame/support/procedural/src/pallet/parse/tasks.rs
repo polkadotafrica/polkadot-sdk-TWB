@@ -415,12 +415,11 @@ impl TryFrom<PalletTaskAttr<TaskAttrMeta>> for TaskIndexAttr {
 		let colons = value.colons;
 		match value.meta {
 			TaskAttrMeta::TaskIndex(meta) => parse2(quote!(#pound[#pallet #colons #meta])),
-			_ => {
+			_ =>
 				return Err(Error::new(
 					value.span(),
 					format!("`{:?}` cannot be converted to a `TaskIndexAttr`", value.meta),
-				))
-			},
+				)),
 		}
 	}
 }
@@ -434,12 +433,11 @@ impl TryFrom<PalletTaskAttr<TaskAttrMeta>> for TaskConditionAttr {
 		let colons = value.colons;
 		match value.meta {
 			TaskAttrMeta::TaskCondition(meta) => parse2(quote!(#pound[#pallet #colons #meta])),
-			_ => {
+			_ =>
 				return Err(Error::new(
 					value.span(),
 					format!("`{:?}` cannot be converted to a `TaskConditionAttr`", value.meta),
-				))
-			},
+				)),
 		}
 	}
 }
@@ -453,12 +451,11 @@ impl TryFrom<PalletTaskAttr<TaskAttrMeta>> for TaskWeightAttr {
 		let colons = value.colons;
 		match value.meta {
 			TaskAttrMeta::TaskWeight(meta) => parse2(quote!(#pound[#pallet #colons #meta])),
-			_ => {
+			_ =>
 				return Err(Error::new(
 					value.span(),
 					format!("`{:?}` cannot be converted to a `TaskWeightAttr`", value.meta),
-				))
-			},
+				)),
 		}
 	}
 }
@@ -472,12 +469,11 @@ impl TryFrom<PalletTaskAttr<TaskAttrMeta>> for TaskListAttr {
 		let colons = value.colons;
 		match value.meta {
 			TaskAttrMeta::TaskList(meta) => parse2(quote!(#pound[#pallet #colons #meta])),
-			_ => {
+			_ =>
 				return Err(Error::new(
 					value.span(),
 					format!("`{:?}` cannot be converted to a `TaskListAttr`", value.meta),
-				))
-			},
+				)),
 		}
 	}
 }
@@ -535,12 +531,12 @@ fn partition_task_attrs(item: &ImplItemFn) -> (Vec<syn::Attribute>, Vec<syn::Att
 		};
 		// N.B: the `PartialEq` impl between `Ident` and `&str` is more efficient than
 		// parsing and makes no stack or heap allocations
-		prefix.ident == "pallet"
-			&& (suffix.ident == "tasks_experimental"
-				|| suffix.ident == "task_list"
-				|| suffix.ident == "task_condition"
-				|| suffix.ident == "task_weight"
-				|| suffix.ident == "task_index")
+		prefix.ident == "pallet" &&
+			(suffix.ident == "tasks_experimental" ||
+				suffix.ident == "task_list" ||
+				suffix.ident == "task_condition" ||
+				suffix.ident == "task_weight" ||
+				suffix.ident == "task_index")
 	})
 }
 

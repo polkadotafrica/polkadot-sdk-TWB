@@ -115,9 +115,8 @@ where
 			source,
 		) {
 			// After validation, some origin must have been authorized.
-			Ok((_, _, origin)) if !origin.is_transaction_authorized() => {
-				Err(InvalidTransaction::UnknownOrigin.into())
-			},
+			Ok((_, _, origin)) if !origin.is_transaction_authorized() =>
+				Err(InvalidTransaction::UnknownOrigin.into()),
 			res => res,
 		}
 	}

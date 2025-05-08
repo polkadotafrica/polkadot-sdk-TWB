@@ -986,8 +986,8 @@ impl<T: Config<I>, I: 'static> Pallet<T, I> {
 		let index = BountyCount::<T, I>::get();
 
 		// reserve deposit for new bounty
-		let bond = T::BountyDepositBase::get()
-			+ T::DataDepositPerByte::get() * (bounded_description.len() as u32).into();
+		let bond = T::BountyDepositBase::get() +
+			T::DataDepositPerByte::get() * (bounded_description.len() as u32).into();
 		T::Currency::reserve(&proposer, bond)
 			.map_err(|_| Error::<T, I>::InsufficientProposersBalance)?;
 

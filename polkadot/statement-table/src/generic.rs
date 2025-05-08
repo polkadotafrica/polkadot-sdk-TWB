@@ -109,9 +109,8 @@ impl<Candidate, Digest, Signature> ValidityDoubleVote<Candidate, Digest, Signatu
 		Signature: Debug + Eq + Clone,
 	{
 		match self {
-			Self::IssuedAndValidity((c, s1), (d, s2)) => {
-				((Statement::Seconded(c), s1), (Statement::Valid(d), s2))
-			},
+			Self::IssuedAndValidity((c, s1), (d, s2)) =>
+				((Statement::Seconded(c), s1), (Statement::Valid(d), s2)),
 		}
 	}
 }
@@ -239,9 +238,8 @@ impl<Ctx: Context> CandidateData<Ctx> {
 			.iter()
 			.map(|(a, v)| match *v {
 				ValidityVote::Valid(ref s) => (a.clone(), ValidityAttestation::Explicit(s.clone())),
-				ValidityVote::Issued(ref s) => {
-					(a.clone(), ValidityAttestation::Implicit(s.clone()))
-				},
+				ValidityVote::Issued(ref s) =>
+					(a.clone(), ValidityAttestation::Implicit(s.clone())),
 			})
 			.collect();
 
@@ -327,12 +325,10 @@ impl<Ctx: Context> Table<Ctx> {
 	) -> Option<Summary<Ctx::Digest, Ctx::GroupId>> {
 		let SignedStatement { statement, signature, sender: signer } = statement;
 		let res = match statement {
-			Statement::Seconded(candidate) => {
-				self.import_candidate(context, signer.clone(), candidate, signature, group_id)
-			},
-			Statement::Valid(digest) => {
-				self.validity_vote(context, signer.clone(), digest, ValidityVote::Valid(signature))
-			},
+			Statement::Seconded(candidate) =>
+				self.import_candidate(context, signer.clone(), candidate, signature, group_id),
+			Statement::Valid(digest) =>
+				self.validity_vote(context, signer.clone(), digest, ValidityVote::Valid(signature)),
 		};
 
 		match res {
@@ -455,23 +451,20 @@ impl<Ctx: Context> Table<Ctx> {
 				return if occ.get() != &vote {
 					Err(match (occ.get().clone(), vote) {
 						// valid vote conflicting with candidate statement
-						(ValidityVote::Issued(iss), ValidityVote::Valid(good))
-						| (ValidityVote::Valid(good), ValidityVote::Issued(iss)) => {
+						(ValidityVote::Issued(iss), ValidityVote::Valid(good)) |
+						(ValidityVote::Valid(good), ValidityVote::Issued(iss)) =>
 							make_vdv(ValidityDoubleVote::IssuedAndValidity(
 								(votes.candidate.clone(), iss),
 								(digest, good),
-							))
-						},
+							)),
 
 						// two signatures on same candidate
-						(ValidityVote::Issued(a), ValidityVote::Issued(b)) => {
-							make_ds(DoubleSign::Seconded(votes.candidate.clone(), a, b))
-						},
+						(ValidityVote::Issued(a), ValidityVote::Issued(b)) =>
+							make_ds(DoubleSign::Seconded(votes.candidate.clone(), a, b)),
 
 						// two signatures on same validity vote
-						(ValidityVote::Valid(a), ValidityVote::Valid(b)) => {
-							make_ds(DoubleSign::Validity(digest, a, b))
-						},
+						(ValidityVote::Valid(a), ValidityVote::Valid(b)) =>
+							make_ds(DoubleSign::Validity(digest, a, b)),
 					})
 				} else {
 					Ok(None)

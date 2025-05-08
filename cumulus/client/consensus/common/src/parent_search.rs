@@ -395,9 +395,9 @@ pub fn search_child_branches_for_parents<Block: BlockT>(
 		for child in backend.blockchain().children(hash).ok().into_iter().flatten() {
 			tracing::trace!(target: PARENT_SEARCH_LOG_TARGET, ?child, child_depth, ?pending_distance, "Looking at child.");
 
-			let aligned_with_pending = parent_aligned_with_pending
-				&& (pending_distance.map_or(true, |dist| child_depth > dist)
-					|| is_child_pending(child));
+			let aligned_with_pending = parent_aligned_with_pending &&
+				(pending_distance.map_or(true, |dist| child_depth > dist) ||
+					is_child_pending(child));
 
 			if ignore_alternative_branches && !aligned_with_pending {
 				tracing::trace!(target: PARENT_SEARCH_LOG_TARGET, ?child, "Child is not aligned with pending block.");

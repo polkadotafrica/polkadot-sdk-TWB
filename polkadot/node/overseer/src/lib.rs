@@ -688,7 +688,7 @@ where
 	#[cfg(any(target_os = "linux", feature = "jemalloc-allocator"))]
 	let collect_memory_stats: Box<dyn Fn(&OverseerMetrics) + Send> =
 		match memory_stats::MemoryAllocationTracker::new() {
-			Ok(memory_stats) => {
+			Ok(memory_stats) =>
 				Box::new(move |metrics: &OverseerMetrics| match memory_stats.snapshot() {
 					Ok(memory_stats_snapshot) => {
 						gum::trace!(
@@ -701,8 +701,7 @@ where
 					Err(e) => {
 						gum::debug!(target: LOG_TARGET, "Failed to obtain memory stats: {:?}", e)
 					},
-				})
-			},
+				}),
 			Err(_) => {
 				gum::debug!(
 					target: LOG_TARGET,

@@ -1000,9 +1000,9 @@ impl<T: Config> AsynchronousVerifier for Pallet<T> {
 		// exist if we were doing something.
 		#[cfg(debug_assertions)]
 		assert!(
-			!matches!(StatusStorage::<T>::get(), Status::Ongoing(_))
-				|| (matches!(StatusStorage::<T>::get(), Status::Ongoing(_))
-					&& QueuedSolution::<T>::invalid_iter().count() > 0)
+			!matches!(StatusStorage::<T>::get(), Status::Ongoing(_)) ||
+				(matches!(StatusStorage::<T>::get(), Status::Ongoing(_)) &&
+					QueuedSolution::<T>::invalid_iter().count() > 0)
 		);
 		QueuedSolution::<T>::clear_invalid_and_backings_unchecked();
 

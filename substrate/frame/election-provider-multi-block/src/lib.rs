@@ -681,8 +681,8 @@ pub mod pallet {
 			let max_vote: usize = <SolutionOf<T::MinerConfig> as NposSolution>::LIMIT;
 
 			// 2. Maximum sum of [SolutionAccuracy; 16] must fit into `UpperOf<OffchainAccuracy>`.
-			let maximum_chain_accuracy: Vec<UpperOf<SolutionAccuracyOf<T::MinerConfig>>> = (0
-				..max_vote)
+			let maximum_chain_accuracy: Vec<UpperOf<SolutionAccuracyOf<T::MinerConfig>>> = (0..
+				max_vote)
 				.map(|_| {
 					<UpperOf<SolutionAccuracyOf<T::MinerConfig>>>::from(
 						<SolutionAccuracyOf<T::MinerConfig>>::one().deconstruct(),
@@ -928,8 +928,8 @@ pub mod pallet {
 				.take(up_to_page as usize)
 			{
 				ensure!(
-					(exists ^ Self::voters(p).is_none())
-						&& (exists ^ Self::voters_hash(p).is_none()),
+					(exists ^ Self::voters(p).is_none()) &&
+						(exists ^ Self::voters_hash(p).is_none()),
 					"voter page existence mismatch"
 				);
 
@@ -945,8 +945,8 @@ pub mod pallet {
 				.take((T::Pages::get() - up_to_page) as usize)
 			{
 				ensure!(
-					(exists ^ Self::voters(p).is_some())
-						&& (exists ^ Self::voters_hash(p).is_some()),
+					(exists ^ Self::voters(p).is_some()) &&
+						(exists ^ Self::voters_hash(p).is_some()),
 					"voter page non-existence mismatch"
 				);
 			}
@@ -966,17 +966,17 @@ pub mod pallet {
 			ensure!(Self::desired_targets().is_some(), "desired target mismatch");
 			ensure!(Self::targets_hash().is_some(), "targets hash mismatch");
 			ensure!(
-				Self::targets_decode_len().unwrap_or_default() as u32
-					== T::TargetSnapshotPerBlock::get(),
+				Self::targets_decode_len().unwrap_or_default() as u32 ==
+					T::TargetSnapshotPerBlock::get(),
 				"targets decode length mismatch"
 			);
 
 			// ensure that voter pages that should exist, indeed to exist..
 			for p in crate::Pallet::<T>::lsp()..=crate::Pallet::<T>::msp() {
 				ensure!(
-					Self::voters_hash(p).is_some()
-						&& Self::voters_decode_len(p).unwrap_or_default() as u32
-							== T::VoterSnapshotPerBlock::get(),
+					Self::voters_hash(p).is_some() &&
+						Self::voters_decode_len(p).unwrap_or_default() as u32 ==
+							T::VoterSnapshotPerBlock::get(),
 					"voter page existence mismatch"
 				);
 			}
@@ -1005,23 +1005,21 @@ pub mod pallet {
 				Phase::Off => Self::ensure_snapshot(false, T::Pages::get()),
 
 				// we will star the snapshot in the next phase.
-				Phase::Snapshot(p) if p == T::Pages::get() => {
-					Self::ensure_snapshot(false, T::Pages::get())
-				},
+				Phase::Snapshot(p) if p == T::Pages::get() =>
+					Self::ensure_snapshot(false, T::Pages::get()),
 				// we are mid voter snapshot.
-				Phase::Snapshot(p) if p < T::Pages::get() && p > 0 => {
-					Self::ensure_snapshot(true, T::Pages::get() - p - 1)
-				},
+				Phase::Snapshot(p) if p < T::Pages::get() && p > 0 =>
+					Self::ensure_snapshot(true, T::Pages::get() - p - 1),
 				// we cannot check anything in this block -- we take the last page of the snapshot.
 				Phase::Snapshot(_) => Ok(()),
 
 				// full snapshot must exist in these phases.
-				Phase::Emergency
-				| Phase::Signed(_)
-				| Phase::SignedValidation(_)
-				| Phase::Export(_)
-				| Phase::Done
-				| Phase::Unsigned(_) => Self::ensure_snapshot(true, T::Pages::get()),
+				Phase::Emergency |
+				Phase::Signed(_) |
+				Phase::SignedValidation(_) |
+				Phase::Export(_) |
+				Phase::Done |
+				Phase::Unsigned(_) => Self::ensure_snapshot(true, T::Pages::get()),
 			}?;
 
 			Ok(())
@@ -1186,8 +1184,8 @@ impl<T: Config> Pallet<T> {
 		// check the snapshot fingerprint, if asked for.
 		ensure!(
 			maybe_snapshot_fingerprint
-				.map_or(true, |snapshot_fingerprint| Snapshot::<T>::fingerprint()
-					== snapshot_fingerprint),
+				.map_or(true, |snapshot_fingerprint| Snapshot::<T>::fingerprint() ==
+					snapshot_fingerprint),
 			CommonError::WrongFingerprint
 		);
 
@@ -1494,11 +1492,11 @@ impl<T: Config> ElectionProvider for Pallet<T> {
 			Phase::Off => Err(()),
 
 			// we're doing sth but not read.
-			Phase::Signed(_)
-			| Phase::SignedValidation(_)
-			| Phase::Unsigned(_)
-			| Phase::Snapshot(_)
-			| Phase::Emergency => Ok(false),
+			Phase::Signed(_) |
+			Phase::SignedValidation(_) |
+			Phase::Unsigned(_) |
+			Phase::Snapshot(_) |
+			Phase::Emergency => Ok(false),
 
 			// we're ready
 			Phase::Done | Phase::Export(_) => Ok(true),

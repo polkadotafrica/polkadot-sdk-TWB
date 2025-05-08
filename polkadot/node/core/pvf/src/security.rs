@@ -105,8 +105,8 @@ impl FullSecurityStatus {
 	}
 
 	fn all_errs_allowed(&self) -> bool {
-		!self.partial.secure_validator_mode
-			|| self.errs.iter().all(|err| err.is_allowed_in_secure_mode(&self.partial))
+		!self.partial.secure_validator_mode ||
+			self.errs.iter().all(|err| err.is_allowed_in_secure_mode(&self.partial))
 	}
 
 	fn errs_string(&self) -> String {
@@ -141,9 +141,8 @@ impl SecureModeError {
 		match self {
 			// Landlock is present on relatively recent Linuxes. This is optional if the unshare
 			// capability is present, providing FS sandboxing a different way.
-			CannotEnableLandlock { .. } => {
-				security_status.can_unshare_user_namespace_and_change_root
-			},
+			CannotEnableLandlock { .. } =>
+				security_status.can_unshare_user_namespace_and_change_root,
 			// seccomp should be present on all modern Linuxes unless it's been disabled.
 			CannotEnableSeccomp(_) => false,
 			// Should always be present on modern Linuxes. If not, Landlock also provides FS

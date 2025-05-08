@@ -231,15 +231,12 @@ where
 	) -> Vec<u8> {
 		let contains_hash = matches!(&value, Some(Value::Node(..)));
 		let mut output = match (&value, contains_hash) {
-			(&None, _) => {
-				partial_from_iterator_encode(partial, number_nibble, NodeKind::BranchNoValue)
-			},
-			(_, false) => {
-				partial_from_iterator_encode(partial, number_nibble, NodeKind::BranchWithValue)
-			},
-			(_, true) => {
-				partial_from_iterator_encode(partial, number_nibble, NodeKind::HashedValueBranch)
-			},
+			(&None, _) =>
+				partial_from_iterator_encode(partial, number_nibble, NodeKind::BranchNoValue),
+			(_, false) =>
+				partial_from_iterator_encode(partial, number_nibble, NodeKind::BranchWithValue),
+			(_, true) =>
+				partial_from_iterator_encode(partial, number_nibble, NodeKind::HashedValueBranch),
 		};
 
 		let bitmap_index = output.len();
@@ -290,12 +287,10 @@ fn partial_from_iterator_encode<I: Iterator<Item = u8>>(
 		NodeKind::Leaf => NodeHeader::Leaf(nibble_count).encode_to(&mut output),
 		NodeKind::BranchWithValue => NodeHeader::Branch(true, nibble_count).encode_to(&mut output),
 		NodeKind::BranchNoValue => NodeHeader::Branch(false, nibble_count).encode_to(&mut output),
-		NodeKind::HashedValueLeaf => {
-			NodeHeader::HashedValueLeaf(nibble_count).encode_to(&mut output)
-		},
-		NodeKind::HashedValueBranch => {
-			NodeHeader::HashedValueBranch(nibble_count).encode_to(&mut output)
-		},
+		NodeKind::HashedValueLeaf =>
+			NodeHeader::HashedValueLeaf(nibble_count).encode_to(&mut output),
+		NodeKind::HashedValueBranch =>
+			NodeHeader::HashedValueBranch(nibble_count).encode_to(&mut output),
 	};
 	output.extend(partial);
 	output

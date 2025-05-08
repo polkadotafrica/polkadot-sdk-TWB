@@ -372,9 +372,8 @@ impl ProtocolController {
 	/// Process connection event.
 	fn process_event(&mut self, event: Event) {
 		match event {
-			Event::IncomingConnection(peer_id, index) => {
-				self.on_incoming_connection(peer_id, index)
-			},
+			Event::IncomingConnection(peer_id, index) =>
+				self.on_incoming_connection(peer_id, index),
 			Event::Dropped(peer_id) => self.on_peer_dropped(peer_id),
 		}
 	}
@@ -387,9 +386,8 @@ impl ProtocolController {
 			Action::SetReservedPeers(peer_ids) => self.on_set_reserved_peers(peer_ids),
 			Action::SetReservedOnly(reserved_only) => self.on_set_reserved_only(reserved_only),
 			Action::DisconnectPeer(peer_id) => self.on_disconnect_peer(peer_id),
-			Action::GetReservedPeers(pending_response) => {
-				self.on_get_reserved_peers(pending_response)
-			},
+			Action::GetReservedPeers(pending_response) =>
+				self.on_get_reserved_peers(pending_response),
 		}
 	}
 
@@ -518,8 +516,8 @@ impl ProtocolController {
 
 		if let PeerState::Connected(direction) = state {
 			// Disconnect if we're at (or over) the regular node limit
-			let disconnect = self.reserved_only
-				|| match direction {
+			let disconnect = self.reserved_only ||
+				match direction {
 					Direction::Inbound => self.num_in >= self.max_in,
 					Direction::Outbound => self.num_out >= self.max_out,
 				};
@@ -673,14 +671,13 @@ impl ProtocolController {
 					*direction = Direction::Inbound;
 					self.accept_connection(peer_id, incoming_index);
 				},
-				PeerState::NotConnected => {
+				PeerState::NotConnected =>
 					if self.peer_store.is_banned(&peer_id.into()) {
 						self.reject_connection(peer_id, incoming_index);
 					} else {
 						*state = PeerState::Connected(Direction::Inbound);
 						self.accept_connection(peer_id, incoming_index);
-					}
-				},
+					},
 			}
 			return;
 		}
@@ -826,8 +823,8 @@ impl ProtocolController {
 			.outgoing_candidates(available_slots, ignored)
 			.into_iter()
 			.filter_map(|peer_id| {
-				(!self.reserved_nodes.contains_key(&peer_id.into())
-					&& !self.nodes.contains_key(&peer_id.into()))
+				(!self.reserved_nodes.contains_key(&peer_id.into()) &&
+					!self.nodes.contains_key(&peer_id.into()))
 				.then_some(peer_id)
 				.or_else(|| {
 					error!(

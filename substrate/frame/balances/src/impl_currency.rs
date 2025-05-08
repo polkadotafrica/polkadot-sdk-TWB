@@ -524,8 +524,8 @@ where
 			return true;
 		}
 		Self::account(who).free.checked_sub(&value).map_or(false, |new_balance| {
-			new_balance >= T::ExistentialDeposit::get()
-				&& Self::ensure_can_withdraw(who, value, WithdrawReasons::RESERVE, new_balance)
+			new_balance >= T::ExistentialDeposit::get() &&
+				Self::ensure_can_withdraw(who, value, WithdrawReasons::RESERVE, new_balance)
 					.is_ok()
 		})
 	}
@@ -791,9 +791,8 @@ where
 		if slashed == beneficiary {
 			return match status {
 				Status::Free => Ok(Self::unreserve_named(id, slashed, value)),
-				Status::Reserved => {
-					Ok(value.saturating_sub(Self::reserved_balance_named(id, slashed)))
-				},
+				Status::Reserved =>
+					Ok(value.saturating_sub(Self::reserved_balance_named(id, slashed))),
 			};
 		}
 

@@ -241,9 +241,9 @@ pub fn compute_assignments(
 	leaving_cores: impl IntoIterator<Item = (CandidateHash, CoreIndex, GroupIndex)> + Clone,
 	enable_v2_assignments: bool,
 ) -> HashMap<CoreIndex, OurAssignment> {
-	if config.n_cores == 0
-		|| config.assignment_keys.is_empty()
-		|| config.validator_groups.is_empty()
+	if config.n_cores == 0 ||
+		config.assignment_keys.is_empty() ||
+		config.validator_groups.is_empty()
 	{
 		gum::trace!(
 			target: LOG_TARGET,
@@ -503,14 +503,13 @@ fn compute_relay_vrf_delay_assignments(
 				let _ = e.insert(our_assignment);
 				true
 			},
-			Entry::Occupied(mut e) => {
+			Entry::Occupied(mut e) =>
 				if e.get().tranche() > our_assignment.tranche() {
 					e.insert(our_assignment);
 					true
 				} else {
 					false
-				}
-			},
+				},
 		};
 
 		if used {
@@ -556,8 +555,8 @@ pub(crate) fn check_assignment_cert(
 		.map_err(|_| InvalidAssignment(Reason::InvalidAssignmentKey))?;
 
 	// Check that we have all backing groups for claimed cores.
-	if claimed_core_indices.count_ones() == 0
-		|| claimed_core_indices.count_ones() != backing_groups.len()
+	if claimed_core_indices.count_ones() == 0 ||
+		claimed_core_indices.count_ones() != backing_groups.len()
 	{
 		return Err(InvalidAssignment(Reason::InvalidArguments));
 	}
@@ -1070,8 +1069,8 @@ mod tests {
 	fn check_rejects_modulo_core_wrong() {
 		check_mutated_assignments(200, 100, 25, |m| {
 			match m.cert.kind.clone() {
-				AssignmentCertKindV2::RelayVRFModulo { .. }
-				| AssignmentCertKindV2::RelayVRFModuloCompact { .. } => {
+				AssignmentCertKindV2::RelayVRFModulo { .. } |
+				AssignmentCertKindV2::RelayVRFModuloCompact { .. } => {
 					m.cores = CoreIndex((m.cores.first_one().unwrap() + 1) as u32 % 100).into();
 
 					Some(false)

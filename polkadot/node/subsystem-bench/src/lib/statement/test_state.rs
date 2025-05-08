@@ -396,12 +396,10 @@ impl HandleNetworkMessage for TestState {
 						let position_in_group =
 							backing_group.iter().position(|v| *v == validator_index).unwrap();
 						match statement.unchecked_payload() {
-							CompactStatement::Seconded(_) => {
-								seconded_in_group.set(position_in_group, true)
-							},
-							CompactStatement::Valid(_) => {
-								validated_in_group.set(position_in_group, true)
-							},
+							CompactStatement::Seconded(_) =>
+								seconded_in_group.set(position_in_group, true),
+							CompactStatement::Valid(_) =>
+								validated_in_group.set(position_in_group, true),
 						}
 					}
 				}

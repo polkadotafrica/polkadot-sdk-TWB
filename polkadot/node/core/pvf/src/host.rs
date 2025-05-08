@@ -503,12 +503,10 @@ async fn handle_to_host(
 			handle_execute_pvf(artifacts, prepare_queue, execute_queue, awaiting_prepare, inputs)
 				.await?;
 		},
-		ToHost::HeadsUp { active_pvfs } => {
-			handle_heads_up(artifacts, prepare_queue, active_pvfs).await?
-		},
-		ToHost::UpdateActiveLeaves { update, ancestors } => {
-			handle_update_active_leaves(execute_queue, update, ancestors).await?
-		},
+		ToHost::HeadsUp { active_pvfs } =>
+			handle_heads_up(artifacts, prepare_queue, active_pvfs).await?,
+		ToHost::UpdateActiveLeaves { update, ancestors } =>
+			handle_update_active_leaves(execute_queue, update, ancestors).await?,
 	}
 
 	Ok(())
@@ -535,9 +533,8 @@ async fn handle_precheck_pvf(
 				*last_time_needed = SystemTime::now();
 				let _ = result_sender.send(Ok(()));
 			},
-			ArtifactState::Preparing { waiting_for_response, num_failures: _ } => {
-				waiting_for_response.push(result_sender)
-			},
+			ArtifactState::Preparing { waiting_for_response, num_failures: _ } =>
+				waiting_for_response.push(result_sender),
 			ArtifactState::FailedToProcess { error, .. } => {
 				// Do not retry an artifact that previously failed preparation.
 				let _ = result_sender.send(PrecheckResult::Err(error.clone()));
@@ -856,9 +853,8 @@ async fn handle_prepare_done(
 	}
 
 	*state = match result {
-		Ok(PrepareSuccess { path, size, .. }) => {
-			ArtifactState::Prepared { path, last_time_needed: SystemTime::now(), size }
-		},
+		Ok(PrepareSuccess { path, size, .. }) =>
+			ArtifactState::Prepared { path, last_time_needed: SystemTime::now(), size },
 		Err(error) => {
 			let last_time_failed = SystemTime::now();
 			let num_failures = *num_failures + 1;
@@ -1003,8 +999,8 @@ fn can_retry_prepare_after_failure(
 
 	// Retry if the retry cooldown has elapsed and if we have already retried less than
 	// `NUM_PREPARE_RETRIES` times. IO errors may resolve themselves.
-	SystemTime::now() >= last_time_failed + PREPARE_FAILURE_COOLDOWN
-		&& num_failures <= NUM_PREPARE_RETRIES
+	SystemTime::now() >= last_time_failed + PREPARE_FAILURE_COOLDOWN &&
+		num_failures <= NUM_PREPARE_RETRIES
 }
 
 /// A stream that yields a pulse continuously at a given interval.

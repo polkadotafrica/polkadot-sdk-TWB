@@ -530,8 +530,8 @@ pub mod pallet {
 			let unchecked_eras_to_check = {
 				// get the last available `bonding_duration` eras up to current era in reverse
 				// order.
-				let total_check_range = (current_era.saturating_sub(bonding_duration)
-					..=current_era)
+				let total_check_range = (current_era.saturating_sub(bonding_duration)..=
+					current_era)
 					.rev()
 					.collect::<Vec<_>>();
 				debug_assert!(
@@ -607,7 +607,7 @@ pub mod pallet {
 				);
 
 				match checked.try_extend(unchecked_eras_to_check.clone().into_iter()) {
-					Ok(_) => {
+					Ok(_) =>
 						if stashes.is_empty() {
 							Self::deposit_event(Event::<T>::BatchFinished { size: 0 });
 						} else {
@@ -615,8 +615,7 @@ pub mod pallet {
 							Self::deposit_event(Event::<T>::BatchChecked {
 								eras: unchecked_eras_to_check,
 							});
-						}
-					},
+						},
 					Err(_) => {
 						// don't put the head back in -- there is an internal error in the pallet.
 						Self::halt("checked is pruned via retain above")

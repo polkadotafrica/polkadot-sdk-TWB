@@ -490,17 +490,15 @@ mod tests {
 
 	async fn count(pool: &SqlitePool, table: &str, block_hash: Option<H256>) -> usize {
 		let count: i64 = match block_hash {
-			None => {
+			None =>
 				sqlx::query_scalar(&format!("SELECT COUNT(*) FROM {table}"))
 					.fetch_one(pool)
-					.await
-			},
-			Some(hash) => {
+					.await,
+			Some(hash) =>
 				sqlx::query_scalar(&format!("SELECT COUNT(*) FROM {table} WHERE block_hash = ?"))
 					.bind(hash.as_ref())
 					.fetch_one(pool)
-					.await
-			},
+					.await,
 		}
 		.unwrap();
 

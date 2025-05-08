@@ -393,7 +393,7 @@ where
 				self.candidates_in_retry.remove(&block_hash);
 				pov
 			},
-			None => {
+			None =>
 				if self.candidates_in_retry.insert(block_hash) {
 					tracing::debug!(target: LOG_TARGET, ?block_hash, "Recovery failed, retrying.");
 					self.candidate_recovery_queue.push_recovery(block_hash);
@@ -407,8 +407,7 @@ where
 					self.candidates_in_retry.remove(&block_hash);
 					self.reset_candidate(block_hash);
 					return;
-				}
-			},
+				},
 		};
 
 		let raw_block_data =
@@ -706,8 +705,8 @@ async fn pending_candidates(
 
 			// If the relay chain runtime does not support the new runtime API, fallback to the
 			// deprecated one.
-			let pending_availability_result = if parachain_host_runtime_api_version
-				< RuntimeApiRequest::CANDIDATES_PENDING_AVAILABILITY_RUNTIME_REQUIREMENT
+			let pending_availability_result = if parachain_host_runtime_api_version <
+				RuntimeApiRequest::CANDIDATES_PENDING_AVAILABILITY_RUNTIME_REQUIREMENT
 			{
 				#[allow(deprecated)]
 				client_for_closure

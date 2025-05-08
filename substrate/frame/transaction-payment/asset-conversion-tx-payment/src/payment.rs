@@ -184,16 +184,15 @@ where
 		if asset_id == A::get() {
 			// The `asset_id` is the target asset, we do not need to swap.
 			match F::can_withdraw(asset_id.clone(), who, fee) {
-				WithdrawConsequence::BalanceLow
-				| WithdrawConsequence::UnknownAsset
-				| WithdrawConsequence::Underflow
-				| WithdrawConsequence::Overflow
-				| WithdrawConsequence::Frozen => {
-					return Err(TransactionValidityError::from(InvalidTransaction::Payment))
-				},
-				WithdrawConsequence::Success
-				| WithdrawConsequence::ReducedToZero(_)
-				| WithdrawConsequence::WouldDie => return Ok(()),
+				WithdrawConsequence::BalanceLow |
+				WithdrawConsequence::UnknownAsset |
+				WithdrawConsequence::Underflow |
+				WithdrawConsequence::Overflow |
+				WithdrawConsequence::Frozen =>
+					return Err(TransactionValidityError::from(InvalidTransaction::Payment)),
+				WithdrawConsequence::Success |
+				WithdrawConsequence::ReducedToZero(_) |
+				WithdrawConsequence::WouldDie => return Ok(()),
 			}
 		}
 
@@ -203,16 +202,15 @@ where
 
 		// Ensure we can withdraw enough `asset_id` for the swap.
 		match F::can_withdraw(asset_id.clone(), who, asset_fee) {
-			WithdrawConsequence::BalanceLow
-			| WithdrawConsequence::UnknownAsset
-			| WithdrawConsequence::Underflow
-			| WithdrawConsequence::Overflow
-			| WithdrawConsequence::Frozen => {
-				return Err(TransactionValidityError::from(InvalidTransaction::Payment))
-			},
-			WithdrawConsequence::Success
-			| WithdrawConsequence::ReducedToZero(_)
-			| WithdrawConsequence::WouldDie => {},
+			WithdrawConsequence::BalanceLow |
+			WithdrawConsequence::UnknownAsset |
+			WithdrawConsequence::Underflow |
+			WithdrawConsequence::Overflow |
+			WithdrawConsequence::Frozen =>
+				return Err(TransactionValidityError::from(InvalidTransaction::Payment)),
+			WithdrawConsequence::Success |
+			WithdrawConsequence::ReducedToZero(_) |
+			WithdrawConsequence::WouldDie => {},
 		};
 
 		Ok(())
@@ -229,8 +227,8 @@ where
 	) -> Result<BalanceOf<T>, TransactionValidityError> {
 		let (fee_paid, initial_asset_consumed) = already_withdrawn;
 		let refund_amount = fee_paid.peek().saturating_sub(corrected_fee);
-		let (fee_in_asset, adjusted_paid) = if refund_amount.is_zero()
-			|| F::total_balance(asset_id.clone(), who).is_zero()
+		let (fee_in_asset, adjusted_paid) = if refund_amount.is_zero() ||
+			F::total_balance(asset_id.clone(), who).is_zero()
 		{
 			// Nothing to refund or the account was removed be the dispatched function.
 			(initial_asset_consumed, fee_paid)

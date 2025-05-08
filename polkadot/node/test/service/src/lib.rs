@@ -86,7 +86,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 	let network_backend = config.network.network_backend.unwrap_or(default_backend);
 
 	match network_backend {
-		sc_network::config::NetworkBackendType::Libp2p => {
+		sc_network::config::NetworkBackendType::Libp2p =>
 			polkadot_service::new_full::<_, sc_network::NetworkWorker<_, _>>(
 				config,
 				polkadot_service::NewFullParams {
@@ -108,9 +108,8 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 					enable_approval_voting_parallel: false,
 					keep_finalized_for: None,
 				},
-			)
-		},
-		sc_network::config::NetworkBackendType::Litep2p => {
+			),
+		sc_network::config::NetworkBackendType::Litep2p =>
 			polkadot_service::new_full::<_, sc_network::Litep2pNetworkBackend>(
 				config,
 				polkadot_service::NewFullParams {
@@ -132,8 +131,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 					enable_approval_voting_parallel: false,
 					keep_finalized_for: None,
 				},
-			)
-		},
+			),
 	}
 }
 

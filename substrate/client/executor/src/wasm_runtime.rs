@@ -302,7 +302,7 @@ where
 	}
 
 	match wasm_method {
-		WasmExecutionMethod::Compiled { instantiation_strategy } => {
+		WasmExecutionMethod::Compiled { instantiation_strategy } =>
 			sc_executor_wasmtime::create_runtime::<H>(
 				blob,
 				sc_executor_wasmtime::Config {
@@ -321,8 +321,7 @@ where
 					},
 				},
 			)
-			.map(|runtime| -> Box<dyn WasmModule> { Box::new(runtime) })
-		},
+			.map(|runtime| -> Box<dyn WasmModule> { Box::new(runtime) }),
 	}
 }
 

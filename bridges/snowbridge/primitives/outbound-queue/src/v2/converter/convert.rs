@@ -133,9 +133,8 @@ where
 			let (token, amount) = match ena {
 				Asset { id: AssetId(inner_location), fun: Fungible(amount) } => {
 					match inner_location.unpack() {
-						(0, [AccountKey20 { network, key }]) if self.network_matches(network) => {
-							Ok((H160(*key), amount))
-						},
+						(0, [AccountKey20 { network, key }]) if self.network_matches(network) =>
+							Ok((H160(*key), amount)),
 						// To allow ether
 						(0, []) => Ok((H160([0; 20]), amount)),
 						_ => Err(AssetResolutionFailed),

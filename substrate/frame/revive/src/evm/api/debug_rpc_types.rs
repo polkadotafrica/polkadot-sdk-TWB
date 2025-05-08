@@ -96,9 +96,8 @@ impl<'de> Deserialize<'de> for TracerConfig {
 				}
 
 				match tracer_type.as_deref() {
-					Some("callTracer") => {
-						Ok(TracerConfig::CallTracer { with_logs: with_logs.unwrap_or(true) })
-					},
+					Some("callTracer") =>
+						Ok(TracerConfig::CallTracer { with_logs: with_logs.unwrap_or(true) }),
 					_ => Err(de::Error::custom("Unsupported or missing tracer type")),
 				}
 			}

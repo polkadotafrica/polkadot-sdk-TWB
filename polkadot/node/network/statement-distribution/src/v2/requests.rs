@@ -583,13 +583,12 @@ impl UnhandledResponse {
 		// it could also happen in the case that we had a request in-flight
 		// and the request entry was garbage-collected on outdated relay parent.
 		let entry = match manager.requests.get_mut(&identifier) {
-			None => {
+			None =>
 				return ResponseValidationOutput {
 					requested_peer,
 					reputation_changes: Vec::new(),
 					request_status: CandidateRequestStatus::Outdated,
-				}
-			},
+				},
 			Some(e) => e,
 		};
 
@@ -711,8 +710,8 @@ fn validate_complete_response(
 			return invalid_candidate_output(COST_INVALID_RESPONSE);
 		}
 
-		if response.candidate_receipt.descriptor.persisted_validation_data_hash()
-			!= response.persisted_validation_data.hash()
+		if response.candidate_receipt.descriptor.persisted_validation_data_hash() !=
+			response.persisted_validation_data.hash()
 		{
 			return invalid_candidate_output(COST_INVALID_RESPONSE);
 		}
@@ -731,8 +730,8 @@ fn validate_complete_response(
 		let candidate_hash = response.candidate_receipt.hash();
 
 		// V2 descriptors are invalid if not enabled by runtime.
-		if !allow_v2_descriptors
-			&& response.candidate_receipt.descriptor.version() == CandidateDescriptorVersion::V2
+		if !allow_v2_descriptors &&
+			response.candidate_receipt.descriptor.version() == CandidateDescriptorVersion::V2
 		{
 			gum::debug!(
 				target: LOG_TARGET,
@@ -795,8 +794,8 @@ fn validate_complete_response(
 			};
 
 			// ensure statement is on the correct candidate hash.
-			if unchecked_statement.unchecked_payload().candidate_hash()
-				!= &identifier.candidate_hash
+			if unchecked_statement.unchecked_payload().candidate_hash() !=
+				&identifier.candidate_hash
 			{
 				rep_changes.push((requested_peer, COST_UNREQUESTED_RESPONSE_STATEMENT));
 				continue;

@@ -148,12 +148,10 @@ impl<
 		let amount: Currency::Balance =
 			Matcher::matches_fungible(what).ok_or(Error::AssetNotHandled)?;
 		match CheckedAccount::get() {
-			Some((checked_account, MintLocation::Local)) => {
-				Self::can_reduce_checked(checked_account, amount)
-			},
-			Some((checked_account, MintLocation::NonLocal)) => {
-				Self::can_accrue_checked(checked_account, amount)
-			},
+			Some((checked_account, MintLocation::Local)) =>
+				Self::can_reduce_checked(checked_account, amount),
+			Some((checked_account, MintLocation::NonLocal)) =>
+				Self::can_accrue_checked(checked_account, amount),
 			None => Ok(()),
 		}
 	}
@@ -162,12 +160,10 @@ impl<
 		tracing::trace!(target: "xcm::currency_adapter", ?origin, ?what, "check_in origin");
 		if let Some(amount) = Matcher::matches_fungible(what) {
 			match CheckedAccount::get() {
-				Some((checked_account, MintLocation::Local)) => {
-					Self::reduce_checked(checked_account, amount)
-				},
-				Some((checked_account, MintLocation::NonLocal)) => {
-					Self::accrue_checked(checked_account, amount)
-				},
+				Some((checked_account, MintLocation::Local)) =>
+					Self::reduce_checked(checked_account, amount),
+				Some((checked_account, MintLocation::NonLocal)) =>
+					Self::accrue_checked(checked_account, amount),
 				None => (),
 			}
 		}
@@ -177,12 +173,10 @@ impl<
 		tracing::trace!(target: "xcm::currency_adapter", ?dest, ?what, "can_check_out");
 		let amount = Matcher::matches_fungible(what).ok_or(Error::AssetNotHandled)?;
 		match CheckedAccount::get() {
-			Some((checked_account, MintLocation::Local)) => {
-				Self::can_accrue_checked(checked_account, amount)
-			},
-			Some((checked_account, MintLocation::NonLocal)) => {
-				Self::can_reduce_checked(checked_account, amount)
-			},
+			Some((checked_account, MintLocation::Local)) =>
+				Self::can_accrue_checked(checked_account, amount),
+			Some((checked_account, MintLocation::NonLocal)) =>
+				Self::can_reduce_checked(checked_account, amount),
 			None => Ok(()),
 		}
 	}
@@ -191,12 +185,10 @@ impl<
 		tracing::trace!(target: "xcm::currency_adapter", ?dest, ?what, "check_out");
 		if let Some(amount) = Matcher::matches_fungible(what) {
 			match CheckedAccount::get() {
-				Some((checked_account, MintLocation::Local)) => {
-					Self::accrue_checked(checked_account, amount)
-				},
-				Some((checked_account, MintLocation::NonLocal)) => {
-					Self::reduce_checked(checked_account, amount)
-				},
+				Some((checked_account, MintLocation::Local)) =>
+					Self::accrue_checked(checked_account, amount),
+				Some((checked_account, MintLocation::NonLocal)) =>
+					Self::reduce_checked(checked_account, amount),
 				None => (),
 			}
 		}

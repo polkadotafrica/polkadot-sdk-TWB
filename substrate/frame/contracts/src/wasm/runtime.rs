@@ -364,9 +364,8 @@ impl<T: Config> Token<T> for RuntimeCosts {
 			DelegateCallBase => T::WeightInfo::seal_delegate_call(),
 			CallTransferSurcharge => cost_args!(seal_call, 1, 0),
 			CallInputCloned(len) => cost_args!(seal_call, 0, len),
-			Instantiate { input_data_len, salt_len } => {
-				T::WeightInfo::seal_instantiate(input_data_len, salt_len)
-			},
+			Instantiate { input_data_len, salt_len } =>
+				T::WeightInfo::seal_instantiate(input_data_len, salt_len),
 			HashSha256(len) => T::WeightInfo::seal_hash_sha2_256(len),
 			HashKeccak256(len) => T::WeightInfo::seal_hash_keccak_256(len),
 			HashBlake256(len) => T::WeightInfo::seal_hash_blake2_256(len),
@@ -482,9 +481,8 @@ impl<'a, E: Ext + 'a> Runtime<'a, E> {
 						ReturnFlags::from_bits(*flags).ok_or(Error::<E::T>::InvalidCallFlags)?;
 					return Ok(ExecReturnValue { flags, data: data.to_vec() });
 				},
-				Termination => {
-					return Ok(ExecReturnValue { flags: ReturnFlags::empty(), data: Vec::new() })
-				},
+				Termination =>
+					return Ok(ExecReturnValue { flags: ReturnFlags::empty(), data: Vec::new() }),
 				SupervisorError(error) => return Err((*error).into()),
 			}
 		}
@@ -2273,9 +2271,8 @@ pub mod env {
 			Environment::new(ctx, memory, id, input_ptr, input_len, output_ptr, output_len_ptr);
 		let ret = match chain_extension.call(env)? {
 			RetVal::Converging(val) => Ok(val),
-			RetVal::Diverging { flags, data } => {
-				Err(TrapReason::Return(ReturnData { flags: flags.bits(), data }))
-			},
+			RetVal::Diverging { flags, data } =>
+				Err(TrapReason::Return(ReturnData { flags: flags.bits(), data })),
 		};
 		ctx.chain_extension = Some(chain_extension);
 		ret

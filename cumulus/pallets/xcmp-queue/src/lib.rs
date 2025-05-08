@@ -452,9 +452,9 @@ impl QueueConfigData {
 	///
 	/// Should be called prior to accepting this as new config.
 	pub fn validate<T: crate::Config>(&self) -> sp_runtime::DispatchResult {
-		if self.resume_threshold < self.suspend_threshold
-			&& self.suspend_threshold <= self.drop_threshold
-			&& self.resume_threshold > 0
+		if self.resume_threshold < self.suspend_threshold &&
+			self.suspend_threshold <= self.drop_threshold &&
+			self.resume_threshold > 0
 		{
 			Ok(())
 		} else {
@@ -852,7 +852,7 @@ impl<T: Config> XcmpMessageHandler for Pallet<T> {
 			};
 
 			match format {
-				XcmpMessageFormat::Signals => {
+				XcmpMessageFormat::Signals =>
 					while !data.is_empty() {
 						if meter
 							.try_consume(
@@ -873,8 +873,7 @@ impl<T: Config> XcmpMessageHandler for Pallet<T> {
 								break;
 							},
 						}
-					}
-				},
+					},
 				XcmpMessageFormat::ConcatenatedVersionedXcm => {
 					if known_xcm_senders.insert(sender) {
 						if meter

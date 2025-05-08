@@ -39,8 +39,8 @@ impl<
 		let prefix = Prefix::get();
 		let latest_prefix: Location = prefix.try_into().ok()?;
 		let latest_id: Location = (*id).clone().try_into().ok()?;
-		if latest_prefix.parent_count() != latest_id.parent_count()
-			|| latest_prefix
+		if latest_prefix.parent_count() != latest_id.parent_count() ||
+			latest_prefix
 				.interior()
 				.iter()
 				.enumerate()
@@ -147,9 +147,8 @@ impl<
 {
 	fn matches_nonfungibles(a: &Asset) -> result::Result<(ClassId, InstanceId), MatchError> {
 		let (instance, class) = match (&a.fun, &a.id) {
-			(NonFungible(ref instance), AssetId(ref class)) if MatchClassId::contains(class) => {
-				(instance, class)
-			},
+			(NonFungible(ref instance), AssetId(ref class)) if MatchClassId::contains(class) =>
+				(instance, class),
 			_ => return Err(MatchError::AssetNotHandled),
 		};
 		let what = ConvertClassId::convert(class).ok_or(MatchError::AssetIdConversionFailed)?;

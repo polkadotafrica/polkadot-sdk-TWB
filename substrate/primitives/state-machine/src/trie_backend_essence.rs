@@ -129,8 +129,8 @@ where
 			},
 			Some(Err(error)) => {
 				self.state = IterState::FinishedIncomplete;
-				if matches!(*error, TrieError::IncompleteDatabase(_))
-					&& self.stop_on_incomplete_database
+				if matches!(*error, TrieError::IncompleteDatabase(_)) &&
+					self.stop_on_incomplete_database
 				{
 					None
 				} else {
@@ -681,7 +681,7 @@ where
 			self.with_recorder_and_cache_for_storage_root(Some(child_root), |recorder, cache| {
 				let mut eph = Ephemeral::new(self.backend_storage(), &mut write_overlay);
 				match match state_version {
-					StateVersion::V0 => {
+					StateVersion::V0 =>
 						child_delta_trie_root::<sp_trie::LayoutV0<H>, _, _, _, _, _, _>(
 							child_info.keyspace(),
 							&mut eph,
@@ -689,9 +689,8 @@ where
 							delta,
 							recorder,
 							cache,
-						)
-					},
-					StateVersion::V1 => {
+						),
+					StateVersion::V1 =>
 						child_delta_trie_root::<sp_trie::LayoutV1<H>, _, _, _, _, _, _>(
 							child_info.keyspace(),
 							&mut eph,
@@ -699,8 +698,7 @@ where
 							delta,
 							recorder,
 							cache,
-						)
-					},
+						),
 				} {
 					Ok(ret) => (Some(ret), ret),
 					Err(e) => {

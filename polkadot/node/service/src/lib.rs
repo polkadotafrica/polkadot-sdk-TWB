@@ -465,12 +465,10 @@ pub fn build_full<OverseerGenerator: OverseerGen>(
 	let network_backend = config.network.network_backend.unwrap_or(default_backend);
 
 	match network_backend {
-		sc_network::config::NetworkBackendType::Libp2p => {
-			new_full::<_, sc_network::NetworkWorker<Block, Hash>>(config, params)
-		},
-		sc_network::config::NetworkBackendType::Litep2p => {
-			new_full::<_, sc_network::Litep2pNetworkBackend>(config, params)
-		},
+		sc_network::config::NetworkBackendType::Libp2p =>
+			new_full::<_, sc_network::NetworkWorker<Block, Hash>>(config, params),
+		sc_network::config::NetworkBackendType::Litep2p =>
+			new_full::<_, sc_network::Litep2pNetworkBackend>(config, params),
 	}
 }
 

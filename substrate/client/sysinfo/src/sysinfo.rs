@@ -100,9 +100,8 @@ impl Metric {
 		match self {
 			Self::Sr25519Verify => Cow::Borrowed("SR25519-Verify"),
 			Self::Blake2256 => Cow::Borrowed("BLAKE2-256"),
-			Self::Blake2256Parallel { num_cores } => {
-				Cow::Owned(format!("BLAKE2-256-Parallel-{}", num_cores))
-			},
+			Self::Blake2256Parallel { num_cores } =>
+				Cow::Owned(format!("BLAKE2-256-Parallel-{}", num_cores)),
 			Self::MemCopy => Cow::Borrowed("Copy"),
 			Self::DiskSeqWrite => Cow::Borrowed("Seq Write"),
 			Self::DiskRndWrite => Cow::Borrowed("Rnd Write"),
@@ -409,8 +408,8 @@ pub fn benchmark_cpu_parallelism(limit: ExecutionLimit, refhw_num_cores: usize) 
 	let average_score = benchmark_threads
 		.into_iter()
 		.map(|thread| thread.join().map(|throughput| throughput.as_kibs()).unwrap_or(0.0))
-		.sum::<f64>()
-		/ refhw_num_cores as f64;
+		.sum::<f64>() /
+		refhw_num_cores as f64;
 	Throughput::from_kibs(average_score)
 }
 
@@ -725,15 +724,14 @@ impl Requirements {
 			}
 
 			match requirement.metric {
-				Metric::Blake2256 => {
+				Metric::Blake2256 =>
 					if requirement.minimum > hwbench.cpu_hashrate_score {
 						failures.push(CheckFailure {
 							metric: requirement.metric,
 							expected: requirement.minimum,
 							found: hwbench.cpu_hashrate_score,
 						});
-					}
-				},
+					},
 				Metric::Blake2256Parallel { .. } => {
 					if requirement.minimum > hwbench.parallel_cpu_hashrate_score {
 						failures.push(CheckFailure {
@@ -743,16 +741,15 @@ impl Requirements {
 						});
 					}
 				},
-				Metric::MemCopy => {
+				Metric::MemCopy =>
 					if requirement.minimum > hwbench.memory_memcpy_score {
 						failures.push(CheckFailure {
 							metric: requirement.metric,
 							expected: requirement.minimum,
 							found: hwbench.memory_memcpy_score,
 						});
-					}
-				},
-				Metric::DiskSeqWrite => {
+					},
+				Metric::DiskSeqWrite =>
 					if let Some(score) = hwbench.disk_sequential_write_score {
 						if requirement.minimum > score {
 							failures.push(CheckFailure {
@@ -761,9 +758,8 @@ impl Requirements {
 								found: score,
 							});
 						}
-					}
-				},
-				Metric::DiskRndWrite => {
+					},
+				Metric::DiskRndWrite =>
 					if let Some(score) = hwbench.disk_random_write_score {
 						if requirement.minimum > score {
 							failures.push(CheckFailure {
@@ -772,8 +768,7 @@ impl Requirements {
 								found: score,
 							});
 						}
-					}
-				},
+					},
 				Metric::Sr25519Verify => {},
 			}
 		}
@@ -822,16 +817,16 @@ mod tests {
 	#[test]
 	fn test_benchmark_disk_sequential_writes() {
 		assert!(
-			benchmark_disk_sequential_writes(DEFAULT_DISK_EXECUTION_LIMIT, "./".as_ref()).unwrap()
-				> Throughput::from_mibs(0.0)
+			benchmark_disk_sequential_writes(DEFAULT_DISK_EXECUTION_LIMIT, "./".as_ref()).unwrap() >
+				Throughput::from_mibs(0.0)
 		);
 	}
 
 	#[test]
 	fn test_benchmark_disk_random_writes() {
 		assert!(
-			benchmark_disk_random_writes(DEFAULT_DISK_EXECUTION_LIMIT, "./".as_ref()).unwrap()
-				> Throughput::from_mibs(0.0)
+			benchmark_disk_random_writes(DEFAULT_DISK_EXECUTION_LIMIT, "./".as_ref()).unwrap() >
+				Throughput::from_mibs(0.0)
 		);
 	}
 

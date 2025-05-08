@@ -799,16 +799,14 @@ async fn send_collation(
 	let candidate_hash = receipt.hash();
 
 	let result = match parent_head_data {
-		ParentHeadData::WithData { head_data, .. } => {
+		ParentHeadData::WithData { head_data, .. } =>
 			Ok(request_v2::CollationFetchingResponse::CollationWithParentHeadData {
 				receipt,
 				pov,
 				parent_head_data: head_data,
-			})
-		},
-		ParentHeadData::OnlyHash(_) => {
-			Ok(request_v2::CollationFetchingResponse::Collation(receipt, pov))
-		},
+			}),
+		ParentHeadData::OnlyHash(_) =>
+			Ok(request_v2::CollationFetchingResponse::Collation(receipt, pov)),
 	};
 
 	let response =
@@ -858,8 +856,8 @@ async fn handle_incoming_peer_message<Context>(
 			ctx.send_message(NetworkBridgeTxMessage::DisconnectPeer(origin, PeerSet::Collation))
 				.await;
 		},
-		CollationProtocols::V1(V1::AdvertiseCollation(_))
-		| CollationProtocols::V2(V2::AdvertiseCollation { .. }) => {
+		CollationProtocols::V1(V1::AdvertiseCollation(_)) |
+		CollationProtocols::V2(V2::AdvertiseCollation { .. }) => {
 			gum::trace!(
 				target: LOG_TARGET,
 				?origin,
@@ -977,9 +975,8 @@ async fn handle_incoming_request<Context>(
 			};
 
 			let collation_with_core = match &req {
-				VersionedCollationRequest::V2(req) => {
-					per_relay_parent.collations.get_mut(&req.payload.candidate_hash)
-				},
+				VersionedCollationRequest::V2(req) =>
+					per_relay_parent.collations.get_mut(&req.payload.candidate_hash),
 			};
 			let (receipt, pov, parent_head_data) =
 				if let Some(collation_with_core) = collation_with_core {

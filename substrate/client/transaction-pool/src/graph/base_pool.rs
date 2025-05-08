@@ -515,13 +515,12 @@ impl<Hash: hash::Hash + Member + Serialize, Ex: std::fmt::Debug> BasePool<Hash, 
 								worst
 							}
 						},
-						_ => {
+						_ =>
 							if worst.imported_at > current.imported_at {
 								current.clone()
 							} else {
 								worst
-							}
-						},
+							},
 					},
 				),
 			});

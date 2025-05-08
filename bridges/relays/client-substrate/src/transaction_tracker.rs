@@ -121,12 +121,10 @@ impl<C: Chain, E: Environment<C>> TransactionTracker<C, E> {
 				(TrackedTransactionStatus::Lost, None)
 			},
 			Either::Right((invalidation_status, _)) => match invalidation_status {
-				InvalidationStatus::Finalized(at_block) => {
-					(TrackedTransactionStatus::Finalized(at_block), Some(invalidation_status))
-				},
-				InvalidationStatus::Invalid => {
-					(TrackedTransactionStatus::Lost, Some(invalidation_status))
-				},
+				InvalidationStatus::Finalized(at_block) =>
+					(TrackedTransactionStatus::Finalized(at_block), Some(invalidation_status)),
+				InvalidationStatus::Invalid =>
+					(TrackedTransactionStatus::Lost, Some(invalidation_status)),
 				InvalidationStatus::Lost => {
 					// wait for the rest of stall timeout - this way we'll be sure that the
 					// transaction is actually dead if it has been crafted properly
@@ -230,9 +228,9 @@ async fn watch_transaction_status<
 				);
 				return InvalidationStatus::Invalid;
 			},
-			Some(TransactionStatusOf::<C>::Future)
-			| Some(TransactionStatusOf::<C>::Ready)
-			| Some(TransactionStatusOf::<C>::Broadcast(_)) => {
+			Some(TransactionStatusOf::<C>::Future) |
+			Some(TransactionStatusOf::<C>::Ready) |
+			Some(TransactionStatusOf::<C>::Broadcast(_)) => {
 				// nothing important (for us) has happened
 			},
 			Some(TransactionStatusOf::<C>::InBlock(block_hash)) => {

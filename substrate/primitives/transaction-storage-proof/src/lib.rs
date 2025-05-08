@@ -167,9 +167,8 @@ pub mod registration {
 		}
 
 		let proof = match client.block_indexed_body(number)? {
-			Some(transactions) if !transactions.is_empty() => {
-				Some(build_proof(parent.as_ref(), transactions)?)
-			},
+			Some(transactions) if !transactions.is_empty() =>
+				Some(build_proof(parent.as_ref(), transactions)?),
 			Some(_) | None => {
 				// Nothing was indexed in that block.
 				None

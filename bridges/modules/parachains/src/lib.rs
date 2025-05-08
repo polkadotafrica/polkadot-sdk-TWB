@@ -521,16 +521,14 @@ pub mod pallet {
 
 				let update_result: Result<_, ()> =
 					ParasInfo::<T, I>::try_mutate(parachain, |stored_best_head| {
-						let is_free = parachain_head_size
-							< T::ParaStoredHeaderDataBuilder::max_free_head_size() as usize
-							&& match stored_best_head {
+						let is_free = parachain_head_size <
+							T::ParaStoredHeaderDataBuilder::max_free_head_size() as usize &&
+							match stored_best_head {
 								Some(ref best_head)
 									if at_relay_block.0.saturating_sub(
 										best_head.best_head_hash.at_relay_block_number,
 									) >= free_headers_interval =>
-								{
-									true
-								},
+									true,
 								Some(_) => false,
 								None => true,
 							};
@@ -693,8 +691,8 @@ pub mod pallet {
 					at_relay_block_number: new_at_relay_block.0,
 					head_hash: new_head_hash,
 				},
-				next_imported_hash_position: (next_imported_hash_position + 1)
-					% T::HeadsToKeep::get(),
+				next_imported_hash_position: (next_imported_hash_position + 1) %
+					T::HeadsToKeep::get(),
 			};
 			ImportedParaHashes::<T, I>::insert(
 				parachain,

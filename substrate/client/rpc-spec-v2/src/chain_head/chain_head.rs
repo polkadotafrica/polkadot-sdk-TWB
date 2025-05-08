@@ -276,10 +276,9 @@ where
 		let result = spawn_blocking(&self.executor, async move {
 			let mut block_guard = match subscriptions.lock_block(&follow_subscription, hash, 1) {
 				Ok(block) => block,
-				Err(SubscriptionManagementError::SubscriptionAbsent)
-				| Err(SubscriptionManagementError::ExceededLimits) => {
-					return ResponsePayload::success(MethodResponse::LimitReached)
-				},
+				Err(SubscriptionManagementError::SubscriptionAbsent) |
+				Err(SubscriptionManagementError::ExceededLimits) =>
+					return ResponsePayload::success(MethodResponse::LimitReached),
 				Err(SubscriptionManagementError::BlockHashAbsent) => {
 					// Block is not part of the subscription.
 					return ResponsePayload::error(ChainHeadRpcError::InvalidBlock);
@@ -356,8 +355,8 @@ where
 
 		let block_guard = match self.subscriptions.lock_block(&follow_subscription, hash, 1) {
 			Ok(block) => block,
-			Err(SubscriptionManagementError::SubscriptionAbsent)
-			| Err(SubscriptionManagementError::ExceededLimits) => return Ok(None),
+			Err(SubscriptionManagementError::SubscriptionAbsent) |
+			Err(SubscriptionManagementError::ExceededLimits) => return Ok(None),
 			Err(SubscriptionManagementError::BlockHashAbsent) => {
 				// Block is not part of the subscription.
 				return Err(ChainHeadRpcError::InvalidBlock.into());
@@ -420,8 +419,8 @@ where
 		let mut block_guard =
 			match self.subscriptions.lock_block(&follow_subscription, hash, items.len()) {
 				Ok(block) => block,
-				Err(SubscriptionManagementError::SubscriptionAbsent)
-				| Err(SubscriptionManagementError::ExceededLimits) => {
+				Err(SubscriptionManagementError::SubscriptionAbsent) |
+				Err(SubscriptionManagementError::ExceededLimits) => {
 					return ResponsePayload::success(MethodResponse::LimitReached);
 				},
 				Err(SubscriptionManagementError::BlockHashAbsent) => {
@@ -487,8 +486,8 @@ where
 
 		let mut block_guard = match self.subscriptions.lock_block(&follow_subscription, hash, 1) {
 			Ok(block) => block,
-			Err(SubscriptionManagementError::SubscriptionAbsent)
-			| Err(SubscriptionManagementError::ExceededLimits) => {
+			Err(SubscriptionManagementError::SubscriptionAbsent) |
+			Err(SubscriptionManagementError::ExceededLimits) => {
 				// Invalid invalid subscription ID.
 				return ResponsePayload::success(MethodResponse::LimitReached);
 			},
@@ -557,12 +556,10 @@ where
 		}
 
 		let result = match hash_or_hashes {
-			ListOrValue::Value(hash) => {
-				self.subscriptions.unpin_blocks(&follow_subscription, [hash])
-			},
-			ListOrValue::List(hashes) => {
-				self.subscriptions.unpin_blocks(&follow_subscription, hashes)
-			},
+			ListOrValue::Value(hash) =>
+				self.subscriptions.unpin_blocks(&follow_subscription, [hash]),
+			ListOrValue::List(hashes) =>
+				self.subscriptions.unpin_blocks(&follow_subscription, hashes),
 		};
 
 		match result {
@@ -575,9 +572,8 @@ where
 				// Block is not part of the subscription.
 				Err(ChainHeadRpcError::InvalidBlock)
 			},
-			Err(SubscriptionManagementError::DuplicateHashes) => {
-				Err(ChainHeadRpcError::InvalidDuplicateHashes)
-			},
+			Err(SubscriptionManagementError::DuplicateHashes) =>
+				Err(ChainHeadRpcError::InvalidDuplicateHashes),
 			Err(_) => Err(ChainHeadRpcError::InvalidBlock),
 		}
 	}

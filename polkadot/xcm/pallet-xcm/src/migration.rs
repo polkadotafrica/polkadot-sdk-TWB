@@ -80,19 +80,16 @@ pub mod data {
 
 		fn needs_migration(&self, minimal_allowed_xcm_version: XcmVersion) -> bool {
 			match &self {
-				QueryStatus::Pending { responder, maybe_match_querier, .. } => {
-					responder.identify_version() < minimal_allowed_xcm_version
-						|| maybe_match_querier
+				QueryStatus::Pending { responder, maybe_match_querier, .. } =>
+					responder.identify_version() < minimal_allowed_xcm_version ||
+						maybe_match_querier
 							.as_ref()
 							.map(|v| v.identify_version() < minimal_allowed_xcm_version)
-							.unwrap_or(false)
-				},
-				QueryStatus::VersionNotifier { origin, .. } => {
-					origin.identify_version() < minimal_allowed_xcm_version
-				},
-				QueryStatus::Ready { response, .. } => {
-					response.identify_version() < minimal_allowed_xcm_version
-				},
+							.unwrap_or(false),
+				QueryStatus::VersionNotifier { origin, .. } =>
+					origin.identify_version() < minimal_allowed_xcm_version,
+				QueryStatus::Ready { response, .. } =>
+					response.identify_version() < minimal_allowed_xcm_version,
 			}
 		}
 
@@ -134,8 +131,8 @@ pub mod data {
 		type MigratedData = Self;
 
 		fn needs_migration(&self, minimal_allowed_xcm_version: XcmVersion) -> bool {
-			self.0 < minimal_allowed_xcm_version
-				|| self.2.identify_version() < minimal_allowed_xcm_version
+			self.0 < minimal_allowed_xcm_version ||
+				self.2.identify_version() < minimal_allowed_xcm_version
 		}
 
 		fn try_migrate(self, to_xcm_version: XcmVersion) -> Result<Option<Self::MigratedData>, ()> {
@@ -155,8 +152,8 @@ pub mod data {
 		type MigratedData = Self;
 
 		fn needs_migration(&self, minimal_allowed_xcm_version: XcmVersion) -> bool {
-			self.owner.identify_version() < minimal_allowed_xcm_version
-				|| self.locker.identify_version() < minimal_allowed_xcm_version
+			self.owner.identify_version() < minimal_allowed_xcm_version ||
+				self.locker.identify_version() < minimal_allowed_xcm_version
 		}
 
 		fn try_migrate(self, to_xcm_version: XcmVersion) -> Result<Option<Self::MigratedData>, ()> {
@@ -180,9 +177,8 @@ pub mod data {
 		type MigratedData = (VersionedLocation, AuthorizedAliasesEntry<TicketOf<T>, M>);
 
 		fn needs_migration(&self, required_version: XcmVersion) -> bool {
-			self.0.identify_version() != required_version
-				|| self
-					.1
+			self.0.identify_version() != required_version ||
+				self.1
 					.aliasers
 					.iter()
 					.any(|alias| alias.location.identify_version() != required_version)

@@ -171,10 +171,10 @@ impl PartialEq for ParticipationRequest {
 			executor_params,
 			request_timer: _,
 		} = self;
-		candidate_receipt == other.candidate_receipt()
-			&& candidate_hash == other.candidate_hash()
-			&& *session == other.session()
-			&& executor_params.hash() == other.executor_params.hash()
+		candidate_receipt == other.candidate_receipt() &&
+			candidate_hash == other.candidate_hash() &&
+			*session == other.session() &&
+			executor_params.hash() == other.executor_params.hash()
 	}
 }
 #[cfg(test)]

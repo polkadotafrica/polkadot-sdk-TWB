@@ -185,9 +185,9 @@ impl Candidates {
 				let mut reckoning = PostConfirmationReckoning::default();
 
 				for (leaf_hash, x) in u.unconfirmed_importable_under {
-					if x.relay_parent == relay_parent
-						&& x.parent_hash == parent_hash
-						&& x.para_id == para_id
+					if x.relay_parent == relay_parent &&
+						x.parent_hash == parent_hash &&
+						x.para_id == para_id
 					{
 						new_confirmed.importable_under.insert(leaf_hash);
 					}
@@ -296,9 +296,8 @@ impl Candidates {
 		) {
 			for (c_hash, candidate) in i {
 				match candidate {
-					CandidateState::Unconfirmed(u) => {
-						u.extend_hypotheticals(*c_hash, v, maybe_required_parent)
-					},
+					CandidateState::Unconfirmed(u) =>
+						u.extend_hypotheticals(*c_hash, v, maybe_required_parent),
 					CandidateState::Confirmed(c) => v.push(c.to_hypothetical(*c_hash)),
 				}
 			}
@@ -336,7 +335,7 @@ impl Candidates {
 			}
 		};
 		self.candidates.retain(|c_hash, state| match state {
-			CandidateState::Confirmed(ref mut c) => {
+			CandidateState::Confirmed(ref mut c) =>
 				if !relay_parent_live(&c.relay_parent()) {
 					remove_parent_claims(*c_hash, c.parent_head_data_hash(), c.para_id());
 					false
@@ -345,8 +344,7 @@ impl Candidates {
 						c.importable_under.remove(leaf_hash);
 					}
 					true
-				}
-			},
+				},
 			CandidateState::Unconfirmed(ref mut c) => {
 				c.on_deactivate_leaves(
 					leaves,
@@ -395,9 +393,9 @@ impl CandidateClaims {
 		parent_hash: Hash,
 		para_id: ParaId,
 	) -> bool {
-		self.relay_parent == relay_parent
-			&& self.group_index == group_index
-			&& self.parent_hash_and_id.map_or(true, |p| p == (parent_hash, para_id))
+		self.relay_parent == relay_parent &&
+			self.group_index == group_index &&
+			self.parent_hash_and_id.map_or(true, |p| p == (parent_hash, para_id))
 	}
 }
 

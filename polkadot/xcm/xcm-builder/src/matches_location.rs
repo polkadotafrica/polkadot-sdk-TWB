@@ -32,8 +32,7 @@ impl<T: Get<L>, L: TryInto<Location> + Clone> Contains<L> for StartsWith<T, L> {
 		} else {
 			return false;
 		};
-		let latest_t =
-			if let Ok(location) = T::get().try_into() { location } else { return false };
+		let latest_t = if let Ok(location) = T::get().try_into() { location } else { return false };
 		latest_location.starts_with(&latest_t)
 	}
 }

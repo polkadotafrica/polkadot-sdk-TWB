@@ -1042,8 +1042,8 @@ fn handle_peer_messages<RawMessage: Decode, OutMessage: From<RawMessage>>(
 
 		outgoing_events.push(match message {
 			WireMessage::ViewUpdate(new_view) => {
-				if new_view.len() > MAX_VIEW_HEADS
-					|| new_view.finalized_number < peer_data.view.finalized_number
+				if new_view.len() > MAX_VIEW_HEADS ||
+					new_view.finalized_number < peer_data.view.finalized_number
 				{
 					reports.push(MALFORMED_VIEW_COST);
 					continue;
@@ -1058,9 +1058,8 @@ fn handle_peer_messages<RawMessage: Decode, OutMessage: From<RawMessage>>(
 					NetworkBridgeEvent::PeerViewChange(peer, peer_data.view.clone())
 				}
 			},
-			WireMessage::ProtocolMessage(message) => {
-				NetworkBridgeEvent::PeerMessage(peer, message.into())
-			},
+			WireMessage::ProtocolMessage(message) =>
+				NetworkBridgeEvent::PeerMessage(peer, message.into()),
 		})
 	}
 
@@ -1164,9 +1163,9 @@ async fn dispatch_validation_events_to_all<I>(
 					// NetworkBridgeEvent::OurViewChange(..) must also be here,
 					// but it is sent via an unbounded channel.
 					// See https://github.com/paritytech/polkadot-sdk/issues/824
-					NetworkBridgeEvent::PeerConnected(..)
-						| NetworkBridgeEvent::PeerDisconnected(..)
-						| NetworkBridgeEvent::PeerViewChange(..)
+					NetworkBridgeEvent::PeerConnected(..) |
+						NetworkBridgeEvent::PeerDisconnected(..) |
+						NetworkBridgeEvent::PeerViewChange(..)
 				);
 				let message = $message::from(event);
 				if has_high_priority {

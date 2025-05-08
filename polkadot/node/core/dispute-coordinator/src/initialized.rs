@@ -284,9 +284,8 @@ impl Initialized {
 							self.scraper.process_finalized_block(&n);
 							default_confirm
 						},
-						FromOrchestra::Communication { msg } => {
-							self.handle_incoming(ctx, &mut overlay_db, msg, clock.now()).await?
-						},
+						FromOrchestra::Communication { msg } =>
+							self.handle_incoming(ctx, &mut overlay_db, msg, clock.now()).await?,
 					},
 				};
 
@@ -959,9 +958,8 @@ impl Initialized {
 		let candidate_hash = candidate_receipt.hash();
 		let votes_in_db = overlay_db.load_candidate_votes(session, &candidate_hash)?;
 		let relay_parent = match &candidate_receipt {
-			MaybeCandidateReceipt::Provides(candidate_receipt) => {
-				candidate_receipt.descriptor().relay_parent()
-			},
+			MaybeCandidateReceipt::Provides(candidate_receipt) =>
+				candidate_receipt.descriptor().relay_parent(),
 			MaybeCandidateReceipt::AssumeBackingVotePresent(candidate_hash) => match &votes_in_db {
 				Some(votes) => votes.candidate_receipt.descriptor().relay_parent(),
 				None => {
@@ -1018,7 +1016,7 @@ impl Initialized {
 		// not have a `CandidateReceipt` available.
 		let old_state = match votes_in_db.map(CandidateVotes::from) {
 			Some(votes) => CandidateVoteState::new(votes, &env, now),
-			None => {
+			None =>
 				if let MaybeCandidateReceipt::Provides(candidate_receipt) = candidate_receipt {
 					CandidateVoteState::new_from_receipt(candidate_receipt)
 				} else {
@@ -1029,8 +1027,7 @@ impl Initialized {
 						"Cannot import votes, without `CandidateReceipt` available!"
 					);
 					return Ok(ImportStatementsResult::InvalidImport);
-				}
-			},
+				},
 		};
 
 		gum::trace!(target: LOG_TARGET, ?candidate_hash, ?session, "Loaded votes");
@@ -1039,8 +1036,8 @@ impl Initialized {
 		let own_statements = statements
 			.iter()
 			.filter(|(statement, validator_index)| {
-				controlled_indices.contains(validator_index)
-					&& *statement.candidate_hash() == candidate_hash
+				controlled_indices.contains(validator_index) &&
+					*statement.candidate_hash() == candidate_hash
 			})
 			.cloned()
 			.collect::<Vec<_>>();
@@ -1052,8 +1049,8 @@ impl Initialized {
 			//
 			// See guide: We import on fresh disputes to maximize likelihood of fetching votes for
 			// dead forks and once concluded to maximize time for approval votes to trickle in.
-			if intermediate_result.is_freshly_disputed()
-				|| intermediate_result.is_freshly_concluded()
+			if intermediate_result.is_freshly_disputed() ||
+				intermediate_result.is_freshly_concluded()
 			{
 				gum::trace!(
 					target: LOG_TARGET,

@@ -521,9 +521,8 @@ fn decode_collation_response(bytes: &[u8]) -> (CandidateReceipt, PoV) {
 		CollationFetchingResponse::decode(&mut &bytes[..]).expect("Decoding should work");
 	match response {
 		CollationFetchingResponse::Collation(receipt, pov) => (receipt, pov),
-		CollationFetchingResponse::CollationWithParentHeadData { receipt, pov, .. } => {
-			(receipt, pov)
-		},
+		CollationFetchingResponse::CollationWithParentHeadData { receipt, pov, .. } =>
+			(receipt, pov),
 	}
 }
 

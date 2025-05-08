@@ -210,9 +210,8 @@ where
 								Err(f) => Err(f),
 							}
 						},
-						FromOrchestra::Communication { msg } => {
-							self.handle_subsystem_message(&mut ctx, msg).await
-						},
+						FromOrchestra::Communication { msg } =>
+							self.handle_subsystem_message(&mut ctx, msg).await,
 					};
 					log_error(result, "on FromOrchestra")?;
 				},
@@ -255,9 +254,8 @@ where
 		msg: DisputeDistributionMessage,
 	) -> Result<()> {
 		match msg {
-			DisputeDistributionMessage::SendDispute(dispute_msg) => {
-				self.disputes_sender.start_sender(ctx, &mut self.runtime, dispute_msg).await?
-			},
+			DisputeDistributionMessage::SendDispute(dispute_msg) =>
+				self.disputes_sender.start_sender(ctx, &mut self.runtime, dispute_msg).await?,
 		}
 		Ok(())
 	}

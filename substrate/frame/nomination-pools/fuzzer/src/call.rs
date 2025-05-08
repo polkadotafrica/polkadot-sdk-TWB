@@ -267,8 +267,8 @@ fn main() {
 				}
 
 				// execute sanity checks at a fixed interval, possibly on every block.
-				if iteration
-					% (std::env::var("SANITY_CHECK_INTERVAL")
+				if iteration %
+					(std::env::var("SANITY_CHECK_INTERVAL")
 						.ok()
 						.and_then(|x| x.parse::<u64>().ok()))
 					.unwrap_or(1) == 0

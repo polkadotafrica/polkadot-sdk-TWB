@@ -68,9 +68,8 @@ impl From<Error> for XcmError {
 		match e {
 			Error::AssetNotHandled => XcmError::AssetNotFound,
 			Error::AccountIdConversionFailed => FailedToTransactAsset("AccountIdConversionFailed"),
-			Error::AmountToBalanceConversionFailed => {
-				FailedToTransactAsset("AmountToBalanceConversionFailed")
-			},
+			Error::AmountToBalanceConversionFailed =>
+				FailedToTransactAsset("AmountToBalanceConversionFailed"),
 			Error::AssetIdConversionFailed => FailedToTransactAsset("AssetIdConversionFailed"),
 			Error::InstanceConversionFailed => FailedToTransactAsset("InstanceConversionFailed"),
 		}

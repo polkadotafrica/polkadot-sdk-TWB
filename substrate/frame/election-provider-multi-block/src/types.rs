@@ -304,17 +304,14 @@ impl<T: crate::Config> Phase<T> {
 					T::AreWeDone::get()
 				}
 			},
-			Self::Snapshot(non_zero_remaining) => {
-				Self::Snapshot(non_zero_remaining.defensive_saturating_sub(One::one()))
-			},
+			Self::Snapshot(non_zero_remaining) =>
+				Self::Snapshot(non_zero_remaining.defensive_saturating_sub(One::one())),
 
 			// signed phase
-			Self::Signed(zero) if zero == BlockNumberFor::<T>::zero() => {
-				Self::SignedValidation(T::SignedValidationPhase::get().saturating_sub(One::one()))
-			},
-			Self::Signed(non_zero_left) => {
-				Self::Signed(non_zero_left.defensive_saturating_sub(One::one()))
-			},
+			Self::Signed(zero) if zero == BlockNumberFor::<T>::zero() =>
+				Self::SignedValidation(T::SignedValidationPhase::get().saturating_sub(One::one())),
+			Self::Signed(non_zero_left) =>
+				Self::Signed(non_zero_left.defensive_saturating_sub(One::one())),
 
 			// signed validation
 			Self::SignedValidation(zero) if zero == BlockNumberFor::<T>::zero() => {
@@ -324,24 +321,21 @@ impl<T: crate::Config> Phase<T> {
 					T::AreWeDone::get()
 				}
 			},
-			Self::SignedValidation(non_zero_left) => {
-				Self::SignedValidation(non_zero_left.defensive_saturating_sub(One::one()))
-			},
+			Self::SignedValidation(non_zero_left) =>
+				Self::SignedValidation(non_zero_left.defensive_saturating_sub(One::one())),
 
 			// unsigned phase -- at this phase we will
 			Self::Unsigned(zero) if zero == BlockNumberFor::<T>::zero() => T::AreWeDone::get(),
-			Self::Unsigned(non_zero_left) => {
-				Self::Unsigned(non_zero_left.defensive_saturating_sub(One::one()))
-			},
+			Self::Unsigned(non_zero_left) =>
+				Self::Unsigned(non_zero_left.defensive_saturating_sub(One::one())),
 
 			// Done
 			Self::Done => Self::Done,
 
 			// Export
 			Self::Export(0) => Self::Off,
-			Self::Export(non_zero_left) => {
-				Self::Export(non_zero_left.defensive_saturating_sub(One::one()))
-			},
+			Self::Export(non_zero_left) =>
+				Self::Export(non_zero_left.defensive_saturating_sub(One::one())),
 		}
 	}
 

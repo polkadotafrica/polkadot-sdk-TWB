@@ -277,8 +277,8 @@ impl<Header: HeaderT> HasVoted<Header> {
 	pub fn propose(&self) -> Option<&PrimaryPropose<Header>> {
 		match self {
 			HasVoted::Yes(_, Vote::Propose(propose)) => Some(propose),
-			HasVoted::Yes(_, Vote::Prevote(propose, _))
-			| HasVoted::Yes(_, Vote::Precommit(propose, _, _)) => propose.as_ref(),
+			HasVoted::Yes(_, Vote::Prevote(propose, _)) |
+			HasVoted::Yes(_, Vote::Precommit(propose, _, _)) => propose.as_ref(),
 			_ => None,
 		}
 	}
@@ -286,8 +286,8 @@ impl<Header: HeaderT> HasVoted<Header> {
 	/// Returns the prevote we should vote with (if any.)
 	pub fn prevote(&self) -> Option<&Prevote<Header>> {
 		match self {
-			HasVoted::Yes(_, Vote::Prevote(_, prevote))
-			| HasVoted::Yes(_, Vote::Precommit(_, prevote, _)) => Some(prevote),
+			HasVoted::Yes(_, Vote::Prevote(_, prevote)) |
+			HasVoted::Yes(_, Vote::Precommit(_, prevote, _)) => Some(prevote),
 			_ => None,
 		}
 	}
@@ -525,9 +525,8 @@ where
 
 		// find the hash of the latest block in the current set
 		let current_set_latest_hash = match next_change {
-			Some((_, n)) if n.is_zero() => {
-				return Err(Error::Safety("Authority set change signalled at genesis.".to_string()))
-			},
+			Some((_, n)) if n.is_zero() =>
+				return Err(Error::Safety("Authority set change signalled at genesis.".to_string())),
 			// the next set starts at `n` so the current one lasts until `n - 1`. if
 			// `n` is later than the best block, then the current set is still live
 			// at best block.
@@ -731,13 +730,12 @@ where
 		let local_id = local_authority_id(&self.voters, self.config.keystore.as_ref());
 
 		let has_voted = match self.voter_set_state.has_voted(round) {
-			HasVoted::Yes(id, vote) => {
+			HasVoted::Yes(id, vote) =>
 				if local_id.as_ref().map(|k| k == &id).unwrap_or(false) {
 					HasVoted::Yes(id, vote)
 				} else {
 					HasVoted::No
-				}
-			},
+				},
 			HasVoted::No => HasVoted::No,
 		};
 
@@ -1252,10 +1250,10 @@ where
 
 	let is_descendent_of = is_descendent_of(&*client, None);
 
-	if target_header.number() > best_header.number()
-		|| target_header.number() == best_header.number()
-			&& target_header.hash() != best_header.hash()
-		|| !is_descendent_of(&target_header.hash(), &best_header.hash())?
+	if target_header.number() > best_header.number() ||
+		target_header.number() == best_header.number() &&
+			target_header.hash() != best_header.hash() ||
+		!is_descendent_of(&target_header.hash(), &best_header.hash())?
 	{
 		debug!(
 			target: LOG_TARGET,

@@ -229,9 +229,8 @@ pub fn next_intake() {
 		Period::Voting { more, .. } => System::run_to_block::<AllPalletsWithSystem>(
 			System::block_number() + more + claim_period,
 		),
-		Period::Claim { more, .. } => {
-			System::run_to_block::<AllPalletsWithSystem>(System::block_number() + more)
-		},
+		Period::Claim { more, .. } =>
+			System::run_to_block::<AllPalletsWithSystem>(System::block_number() + more),
 	}
 }
 

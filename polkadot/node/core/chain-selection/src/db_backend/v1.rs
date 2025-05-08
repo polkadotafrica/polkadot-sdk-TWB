@@ -290,7 +290,7 @@ impl Backend for DbBackend {
 						block_entry.encode(),
 					);
 				},
-				BackendWriteOp::WriteBlocksByNumber(block_number, v) => {
+				BackendWriteOp::WriteBlocksByNumber(block_number, v) =>
 					if v.is_empty() {
 						tx.delete(self.config.col_data, &block_height_key(block_number));
 					} else {
@@ -299,8 +299,7 @@ impl Backend for DbBackend {
 							&block_height_key(block_number),
 							v.encode(),
 						);
-					}
-				},
+					},
 				BackendWriteOp::WriteViableLeaves(leaves) => {
 					let leaves: LeafEntrySet = leaves.into();
 					if leaves.inner.is_empty() {

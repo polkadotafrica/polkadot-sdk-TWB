@@ -206,12 +206,10 @@ pub mod pallet {
 			let should_send = Self::choose_transaction_type(block_number);
 			let res = match should_send {
 				TransactionType::Signed => Self::fetch_price_and_send_signed(),
-				TransactionType::UnsignedForAny => {
-					Self::fetch_price_and_send_unsigned_for_any_account(block_number)
-				},
-				TransactionType::UnsignedForAll => {
-					Self::fetch_price_and_send_unsigned_for_all_accounts(block_number)
-				},
+				TransactionType::UnsignedForAny =>
+					Self::fetch_price_and_send_unsigned_for_any_account(block_number),
+				TransactionType::UnsignedForAll =>
+					Self::fetch_price_and_send_unsigned_for_all_accounts(block_number),
 				TransactionType::Raw => Self::fetch_price_and_send_raw_unsigned(block_number),
 				TransactionType::None => Ok(()),
 			};
@@ -404,9 +402,8 @@ impl<T: Config> Pallet<T> {
 				match last_send {
 					// If we already have a value in storage and the block number is recent enough
 					// we avoid sending another transaction at this time.
-					Ok(Some(block)) if block_number < block + T::GracePeriod::get() => {
-						Err(RECENTLY_SENT)
-					},
+					Ok(Some(block)) if block_number < block + T::GracePeriod::get() =>
+						Err(RECENTLY_SENT),
 					// In every other case we attempt to acquire the lock and send a transaction.
 					_ => Ok(block_number),
 				}

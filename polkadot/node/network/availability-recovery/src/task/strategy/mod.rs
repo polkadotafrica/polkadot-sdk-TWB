@@ -385,12 +385,10 @@ impl State {
 						Ok((bytes, protocol)) => {
 							if v2_protocol_name == protocol {
 								match req_res::v2::ChunkFetchingResponse::decode(&mut &bytes[..]) {
-									Ok(req_res::v2::ChunkFetchingResponse::Chunk(chunk)) => {
-										Ok((Some(chunk.into()), protocol))
-									},
-									Ok(req_res::v2::ChunkFetchingResponse::NoSuchChunk) => {
-										Ok((None, protocol))
-									},
+									Ok(req_res::v2::ChunkFetchingResponse::Chunk(chunk)) =>
+										Ok((Some(chunk.into()), protocol)),
+									Ok(req_res::v2::ChunkFetchingResponse::NoSuchChunk) =>
+										Ok((None, protocol)),
 									Err(e) => Err(RequestError::InvalidResponse(e)),
 								}
 							} else if v1_protocol_name == protocol {
@@ -415,9 +413,8 @@ impl State {
 										Some(chunk.recombine_into_chunk(&raw_request_v1)),
 										protocol,
 									)),
-									Ok(req_res::v1::ChunkFetchingResponse::NoSuchChunk) => {
-										Ok((None, protocol))
-									},
+									Ok(req_res::v1::ChunkFetchingResponse::NoSuchChunk) =>
+										Ok((None, protocol)),
 									Err(e) => Err(RequestError::InvalidResponse(e)),
 								}
 							} else {
@@ -488,12 +485,10 @@ impl State {
 			match request_result {
 				Ok((maybe_chunk, protocol)) => {
 					match protocol {
-						name if name == params.req_v1_protocol_name => {
-							params.metrics.on_chunk_response_v1()
-						},
-						name if name == params.req_v2_protocol_name => {
-							params.metrics.on_chunk_response_v2()
-						},
+						name if name == params.req_v1_protocol_name =>
+							params.metrics.on_chunk_response_v1(),
+						name if name == params.req_v2_protocol_name =>
+							params.metrics.on_chunk_response_v2(),
 						_ => {},
 					}
 

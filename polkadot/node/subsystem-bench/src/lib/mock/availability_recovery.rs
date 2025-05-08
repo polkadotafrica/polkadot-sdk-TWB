@@ -49,11 +49,10 @@ impl MockAvailabilityRecovery {
 		loop {
 			let msg = ctx.recv().await.expect("Overseer never fails us");
 			match msg {
-				orchestra::FromOrchestra::Signal(signal) => {
+				orchestra::FromOrchestra::Signal(signal) =>
 					if signal == OverseerSignal::Conclude {
 						return;
-					}
-				},
+					},
 				orchestra::FromOrchestra::Communication { msg } => match msg {
 					AvailabilityRecoveryMessage::RecoverAvailableData(_, _, _, _, tx) => {
 						let available_data = AvailableData {

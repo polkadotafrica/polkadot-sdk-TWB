@@ -84,9 +84,7 @@ impl<ParaId: IsSystem + From<u32>, RuntimeOrigin: OriginTrait> ConvertOrigin<Run
 		match (kind, origin.unpack()) {
 			(OriginKind::Superuser, (0, [Junction::Parachain(id)]))
 				if ParaId::from(*id).is_system() =>
-			{
-				Ok(RuntimeOrigin::root())
-			},
+				Ok(RuntimeOrigin::root()),
 			_ => Err(origin),
 		}
 	}
@@ -111,9 +109,7 @@ impl<ParaId: IsSystem + From<u32>, RuntimeOrigin: OriginTrait> ConvertOrigin<Run
 		match (kind, origin.unpack()) {
 			(OriginKind::Superuser, (1, [Junction::Parachain(id)]))
 				if ParaId::from(*id).is_system() =>
-			{
-				Ok(RuntimeOrigin::root())
-			},
+				Ok(RuntimeOrigin::root()),
 			_ => Err(origin),
 		}
 	}
@@ -132,9 +128,8 @@ impl<ParachainOrigin: From<u32>, RuntimeOrigin: From<ParachainOrigin>> ConvertOr
 		let origin = origin.into();
 		tracing::trace!(target: "xcm::origin_conversion", ?origin, ?kind, "ChildParachainAsNative");
 		match (kind, origin.unpack()) {
-			(OriginKind::Native, (0, [Junction::Parachain(id)])) => {
-				Ok(RuntimeOrigin::from(ParachainOrigin::from(*id)))
-			},
+			(OriginKind::Native, (0, [Junction::Parachain(id)])) =>
+				Ok(RuntimeOrigin::from(ParachainOrigin::from(*id))),
 			_ => Err(origin),
 		}
 	}
@@ -157,9 +152,8 @@ impl<ParachainOrigin: From<u32>, RuntimeOrigin: From<ParachainOrigin>> ConvertOr
 			"SiblingParachainAsNative",
 		);
 		match (kind, origin.unpack()) {
-			(OriginKind::Native, (1, [Junction::Parachain(id)])) => {
-				Ok(RuntimeOrigin::from(ParachainOrigin::from(*id)))
-			},
+			(OriginKind::Native, (1, [Junction::Parachain(id)])) =>
+				Ok(RuntimeOrigin::from(ParachainOrigin::from(*id))),
 			_ => Err(origin),
 		}
 	}
@@ -205,9 +199,7 @@ where
 		match (kind, origin.unpack()) {
 			(OriginKind::Native, (0, [Junction::AccountId32 { id, network }]))
 				if matches!(network, None) || *network == Network::get() =>
-			{
-				Ok(RuntimeOrigin::signed((*id).into()))
-			},
+				Ok(RuntimeOrigin::signed((*id).into())),
 			_ => Err(origin),
 		}
 	}
@@ -234,9 +226,7 @@ where
 		match (kind, origin.unpack()) {
 			(OriginKind::Native, (0, [Junction::AccountKey20 { key, network }]))
 				if (matches!(network, None) || *network == Network::get()) =>
-			{
-				Ok(RuntimeOrigin::signed((*key).into()))
-			},
+				Ok(RuntimeOrigin::signed((*key).into())),
 			_ => Err(origin),
 		}
 	}
@@ -289,9 +279,8 @@ where
 {
 	fn try_convert(o: RuntimeOrigin) -> Result<Location, RuntimeOrigin> {
 		o.try_with_caller(|caller| match caller.try_into() {
-			Ok(SystemRawOrigin::Signed(who)) => {
-				Ok(Junction::AccountId32 { network: Network::get(), id: who.into() }.into())
-			},
+			Ok(SystemRawOrigin::Signed(who)) =>
+				Ok(Junction::AccountId32 { network: Network::get(), id: who.into() }.into()),
 			Ok(other) => Err(other.into()),
 			Err(other) => Err(other),
 		})
@@ -364,9 +353,8 @@ impl<WhitelistedSuperuserLocations: Contains<Location>, RuntimeOrigin: OriginTra
 			"LocationAsSuperuser",
 		);
 		match (kind, &origin) {
-			(OriginKind::Superuser, loc) if WhitelistedSuperuserLocations::contains(loc) => {
-				Ok(RuntimeOrigin::root())
-			},
+			(OriginKind::Superuser, loc) if WhitelistedSuperuserLocations::contains(loc) =>
+				Ok(RuntimeOrigin::root()),
 			_ => Err(origin),
 		}
 	}

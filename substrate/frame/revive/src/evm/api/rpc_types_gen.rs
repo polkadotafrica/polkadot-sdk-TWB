@@ -208,14 +208,12 @@ impl<'a> serde::Deserialize<'a> for BlockNumberOrTagOrHash {
 		let r = BlockNumberOrTagOrHashWithAlias::deserialize(de)?;
 		Ok(match r {
 			BlockNumberOrTagOrHashWithAlias::BlockTag(val) => BlockNumberOrTagOrHash::BlockTag(val),
-			BlockNumberOrTagOrHashWithAlias::U256(val)
-			| BlockNumberOrTagOrHashWithAlias::BlockNumber { block_number: val } => {
-				BlockNumberOrTagOrHash::U256(val)
-			},
-			BlockNumberOrTagOrHashWithAlias::H256(val)
-			| BlockNumberOrTagOrHashWithAlias::BlockHash { block_hash: val } => {
-				BlockNumberOrTagOrHash::H256(val)
-			},
+			BlockNumberOrTagOrHashWithAlias::U256(val) |
+			BlockNumberOrTagOrHashWithAlias::BlockNumber { block_number: val } =>
+				BlockNumberOrTagOrHash::U256(val),
+			BlockNumberOrTagOrHashWithAlias::H256(val) |
+			BlockNumberOrTagOrHashWithAlias::BlockHash { block_hash: val } =>
+				BlockNumberOrTagOrHash::H256(val),
 		})
 	}
 }

@@ -290,8 +290,8 @@ where
 
 		// If the relay chain runtime does not support the new runtime API, fallback to the
 		// deprecated one.
-		let candidate_receipts = if parachain_host_runtime_api_version
-			< RuntimeApiRequest::CANDIDATES_PENDING_AVAILABILITY_RUNTIME_REQUIREMENT
+		let candidate_receipts = if parachain_host_runtime_api_version <
+			RuntimeApiRequest::CANDIDATES_PENDING_AVAILABILITY_RUNTIME_REQUIREMENT
 		{
 			#[allow(deprecated)]
 			relay_chain_interface
@@ -389,12 +389,11 @@ where
 
 			let block_announce_data = match BlockAnnounceData::decode_all(&mut data.as_slice()) {
 				Ok(r) => r,
-				Err(err) => {
+				Err(err) =>
 					return Err(Box::new(BlockAnnounceError(format!(
 						"Can not decode the `BlockAnnounceData`: {:?}",
 						err
-					))) as Box<_>)
-				},
+					))) as Box<_>),
 			};
 
 			if let Err(e) = block_announce_data.validate(header_encoded) {

@@ -148,9 +148,8 @@ where
 							matches!(event, CandidateEvent::CandidateIncluded(_, _, _, _))
 						});
 						let candidate = match event {
-							Some(CandidateEvent::CandidateIncluded(candidate, _, _, _)) => {
-								candidate
-							},
+							Some(CandidateEvent::CandidateIncluded(candidate, _, _, _)) =>
+								candidate,
 							_ => {
 								gum::error!(
 									target: MALUS,

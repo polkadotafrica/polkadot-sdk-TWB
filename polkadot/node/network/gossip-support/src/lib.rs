@@ -207,7 +207,7 @@ where
 						gum::debug!(target: LOG_TARGET, error = ?e);
 					}
 				},
-				FromOrchestra::Signal(OverseerSignal::BlockFinalized(_hash, _number)) => {
+				FromOrchestra::Signal(OverseerSignal::BlockFinalized(_hash, _number)) =>
 					if let Some(session_index) = self.last_session_index {
 						if let Err(e) = self
 							.build_topology_for_last_finalized_if_needed(
@@ -222,8 +222,7 @@ where
 								e
 							);
 						}
-					}
-				},
+					},
 				FromOrchestra::Signal(OverseerSignal::Conclude) => return self,
 			}
 		}
@@ -389,8 +388,8 @@ where
 					.await
 					.await??;
 
-			if finalized_session_index < self.min_known_session
-				&& Some(finalized_session_index) != self.finalized_needed_session
+			if finalized_session_index < self.min_known_session &&
+				Some(finalized_session_index) != self.finalized_needed_session
 			{
 				gum::debug!(
 					target: LOG_TARGET,

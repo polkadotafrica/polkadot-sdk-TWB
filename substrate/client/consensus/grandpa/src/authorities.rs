@@ -230,8 +230,8 @@ where
 		F: Fn(&H, &H) -> Result<bool, E>,
 	{
 		let filter = |node_hash: &H, node_num: &N, _: &PendingChange<H, N>| {
-			if number >= *node_num
-				&& (is_descendent_of(node_hash, &hash).unwrap_or_default() || *node_hash == hash)
+			if number >= *node_num &&
+				(is_descendent_of(node_hash, &hash).unwrap_or_default() || *node_hash == hash)
 			{
 				// Continue the search in this subtree.
 				FilterAction::KeepNode
@@ -291,9 +291,8 @@ where
 		}
 
 		let earliest = match (forced, standard) {
-			(Some(forced), Some(standard)) => {
-				Some(if forced.1 < standard.1 { forced } else { standard })
-			},
+			(Some(forced), Some(standard)) =>
+				Some(if forced.1 < standard.1 { forced } else { standard }),
 			(Some(forced), None) => Some(forced),
 			(None, Some(standard)) => Some(standard),
 			(None, None) => None,
@@ -477,8 +476,8 @@ where
 
 				// check if there's any pending standard change that we depend on
 				for (_, _, standard_change) in self.pending_standard_changes.roots() {
-					if standard_change.effective_number() <= median_last_finalized
-						&& is_descendent_of(&standard_change.canon_hash, &change.canon_hash)?
+					if standard_change.effective_number() <= median_last_finalized &&
+						is_descendent_of(&standard_change.canon_hash, &change.canon_hash)?
 					{
 						log::info!(target: LOG_TARGET,
 							"Not applying authority set change forced at block #{:?}, due to pending standard change at block #{:?}",
@@ -567,8 +566,8 @@ where
 				// we will keep all forced changes for any later blocks and that are a
 				// descendent of the finalized block (i.e. they are part of this branch).
 				for change in pending_forced_changes {
-					if change.effective_number() > finalized_number
-						&& is_descendent_of(&finalized_hash, &change.canon_hash)?
+					if change.effective_number() > finalized_number &&
+						is_descendent_of(&finalized_hash, &change.canon_hash)?
 					{
 						self.pending_forced_changes.push(change)
 					}

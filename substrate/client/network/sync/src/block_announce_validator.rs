@@ -75,9 +75,9 @@ pub(crate) enum BlockAnnounceValidationResult<H> {
 impl<H> BlockAnnounceValidationResult<H> {
 	fn peer_id(&self) -> &PeerId {
 		match self {
-			BlockAnnounceValidationResult::Failure { peer_id, .. }
-			| BlockAnnounceValidationResult::Process { peer_id, .. }
-			| BlockAnnounceValidationResult::Skip { peer_id } => peer_id,
+			BlockAnnounceValidationResult::Failure { peer_id, .. } |
+			BlockAnnounceValidationResult::Process { peer_id, .. } |
+			BlockAnnounceValidationResult::Skip { peer_id } => peer_id,
 		}
 	}
 }
@@ -262,13 +262,12 @@ impl<B: BlockT> BlockAnnounceValidator<B> {
 				);
 			},
 			Entry::Occupied(mut entry) => match entry.get().checked_sub(1) {
-				Some(value) => {
+				Some(value) =>
 					if value == 0 {
 						entry.remove();
 					} else {
 						*entry.get_mut() = value;
-					}
-				},
+					},
 				None => {
 					entry.remove();
 

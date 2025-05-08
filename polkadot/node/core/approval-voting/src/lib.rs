@@ -920,8 +920,8 @@ impl NoShowStats {
 	// Print the no-show stats if NO_SHOW_DUMP_FREQUENCY blocks have passed since the last
 	// print.
 	fn maybe_print(&mut self, current_block_number: BlockNumber) {
-		if self.last_dumped_block_number > current_block_number
-			|| current_block_number - self.last_dumped_block_number < NO_SHOW_DUMP_FREQUENCY
+		if self.last_dumped_block_number > current_block_number ||
+			current_block_number - self.last_dumped_block_number < NO_SHOW_DUMP_FREQUENCY
 		{
 			return;
 		}
@@ -1742,12 +1742,10 @@ fn get_core_indices_on_startup(
 ) -> CoreBitfield {
 	match &assignment {
 		AssignmentCertKindV2::RelayVRFModuloCompact { core_bitfield } => core_bitfield.clone(),
-		AssignmentCertKindV2::RelayVRFModulo { sample: _ } => {
-			CoreBitfield::try_from(vec![block_entry_core_index]).expect("Not an empty vec; qed")
-		},
-		AssignmentCertKindV2::RelayVRFDelay { core_index } => {
-			CoreBitfield::try_from(vec![*core_index]).expect("Not an empty vec; qed")
-		},
+		AssignmentCertKindV2::RelayVRFModulo { sample: _ } =>
+			CoreBitfield::try_from(vec![block_entry_core_index]).expect("Not an empty vec; qed"),
+		AssignmentCertKindV2::RelayVRFDelay { core_index } =>
+			CoreBitfield::try_from(vec![*core_index]).expect("Not an empty vec; qed"),
 	}
 }
 
@@ -1760,9 +1758,8 @@ fn get_assignment_core_indices(
 	block_entry: &BlockEntry,
 ) -> Option<CoreBitfield> {
 	match &assignment {
-		AssignmentCertKindV2::RelayVRFModuloCompact { core_bitfield } => {
-			Some(core_bitfield.clone())
-		},
+		AssignmentCertKindV2::RelayVRFModuloCompact { core_bitfield } =>
+			Some(core_bitfield.clone()),
 		AssignmentCertKindV2::RelayVRFModulo { sample: _ } => block_entry
 			.candidates()
 			.iter()
@@ -1770,9 +1767,8 @@ fn get_assignment_core_indices(
 			.map(|(core_index, _candidate_hash)| {
 				CoreBitfield::try_from(vec![*core_index]).expect("Not an empty vec; qed")
 			}),
-		AssignmentCertKindV2::RelayVRFDelay { core_index } => {
-			Some(CoreBitfield::try_from(vec![*core_index]).expect("Not an empty vec; qed"))
-		},
+		AssignmentCertKindV2::RelayVRFDelay { core_index } =>
+			Some(CoreBitfield::try_from(vec![*core_index]).expect("Not an empty vec; qed")),
 	}
 }
 
@@ -2682,14 +2678,13 @@ where
 
 	let block_entry = match db.load_block_entry(&assignment.block_hash)? {
 		Some(b) => b,
-		None => {
+		None =>
 			return Ok((
 				AssignmentCheckResult::Bad(AssignmentCheckError::UnknownBlock(
 					assignment.block_hash,
 				)),
 				Vec::new(),
-			))
-		},
+			)),
 	};
 
 	let session_info = match get_session_info(
@@ -2701,14 +2696,13 @@ where
 	.await
 	{
 		Some(s) => s,
-		None => {
+		None =>
 			return Ok((
 				AssignmentCheckResult::Bad(AssignmentCheckError::UnknownSessionIndex(
 					block_entry.session(),
 				)),
 				Vec::new(),
-			))
-		},
+			)),
 	};
 
 	let n_cores = session_info.n_cores as usize;
@@ -2739,27 +2733,25 @@ where
 		let (claimed_core_index, assigned_candidate_hash) =
 			match block_entry.candidate(candidate_index) {
 				Some((c, h)) => (*c, *h),
-				None => {
+				None =>
 					return Ok((
 						AssignmentCheckResult::Bad(AssignmentCheckError::InvalidCandidateIndex(
 							candidate_index as _,
 						)),
 						Vec::new(),
-					))
-				}, // no candidate at core.
+					)), // no candidate at core.
 			};
 
 		let mut candidate_entry = match db.load_candidate_entry(&assigned_candidate_hash)? {
 			Some(c) => c,
-			None => {
+			None =>
 				return Ok((
 					AssignmentCheckResult::Bad(AssignmentCheckError::InvalidCandidate(
 						candidate_index as _,
 						assigned_candidate_hash,
 					)),
 					Vec::new(),
-				))
-			}, // no candidate at core.
+				)), // no candidate at core.
 		};
 
 		if candidate_entry.approval_entry_mut(&assignment.block_hash).is_none() {
@@ -2796,28 +2788,26 @@ where
 		{
 			let mut candidate_entry = match db.load_candidate_entry(&assigned_candidate_hash)? {
 				Some(c) => c,
-				None => {
+				None =>
 					return Ok((
 						AssignmentCheckResult::Bad(AssignmentCheckError::InvalidCandidate(
 							candidate_index as _,
 							*assigned_candidate_hash,
 						)),
 						Vec::new(),
-					))
-				},
+					)),
 			};
 
 			let approval_entry = match candidate_entry.approval_entry_mut(&assignment.block_hash) {
 				Some(a) => a,
-				None => {
+				None =>
 					return Ok((
 						AssignmentCheckResult::Bad(AssignmentCheckError::Internal(
 							assignment.block_hash,
 							*assigned_candidate_hash,
 						)),
 						Vec::new(),
-					))
-				},
+					)),
 			};
 
 			let is_duplicate_for_candidate = approval_entry.is_assigned(assignment.validator);
@@ -3011,8 +3001,8 @@ enum ApprovalStateTransition {
 impl ApprovalStateTransition {
 	fn validator_index(&self) -> Option<ValidatorIndex> {
 		match *self {
-			ApprovalStateTransition::RemoteApproval(v)
-			| ApprovalStateTransition::LocalApproval(v) => Some(v),
+			ApprovalStateTransition::RemoteApproval(v) |
+			ApprovalStateTransition::LocalApproval(v) => Some(v),
 			ApprovalStateTransition::WakeupProcessed => None,
 		}
 	}
@@ -3197,9 +3187,9 @@ where
 					.as_ref()
 					.map(|validator_index| fork_approval_entry.is_assigned(*validator_index))
 					.unwrap_or_default();
-				if wakeups.wakeup_for(*fork_block_hash, candidate_hash).is_none()
-					&& !fork_approval_entry.is_approved()
-					&& assigned_on_fork_block
+				if wakeups.wakeup_for(*fork_block_hash, candidate_hash).is_none() &&
+					!fork_approval_entry.is_approved() &&
+					assigned_on_fork_block
 				{
 					let fork_block_entry = db.load_block_entry(fork_block_hash);
 					if let Ok(Some(fork_block_entry)) = fork_block_entry {
@@ -3262,8 +3252,8 @@ fn should_trigger_assignment(
 				RequiredTranches::Pending { maximum_broadcast, clock_drift, .. } => {
 					let drifted_tranche_now =
 						tranche_now.saturating_sub(clock_drift as DelayTranche);
-					assignment.tranche() <= maximum_broadcast
-						&& assignment.tranche() <= drifted_tranche_now
+					assignment.tranche() <= maximum_broadcast &&
+						assignment.tranche() <= drifted_tranche_now
 				},
 				RequiredTranches::Exact { .. } => {
 					// indicates that no new assignments are needed at the moment.

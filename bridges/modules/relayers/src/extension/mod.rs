@@ -408,12 +408,11 @@ where
 					relayer,
 				);
 			},
-			RelayerAccountAction::Slash(relayer, slash_account) => {
+			RelayerAccountAction::Slash(relayer, slash_account) =>
 				RelayersPallet::<R, C::BridgeRelayersPalletInstance>::slash_and_deregister(
 					&relayer,
 					ExplicitOrAccountParams::Params(slash_account),
-				)
-			},
+				),
 		}
 
 		Ok(Weight::zero())
@@ -676,8 +675,8 @@ mod tests {
 					test_lane_id(),
 				)
 				.unwrap()
-				.last_delivered_nonce()
-					+ 1,
+				.last_delivered_nonce() +
+					1,
 				nonces_end: best_message,
 			}),
 			messages_count: 1,

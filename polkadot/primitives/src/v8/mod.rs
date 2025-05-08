@@ -1068,15 +1068,15 @@ impl<N: Saturating + BaseArithmetic + Copy> GroupRotationInfo<N> {
 	/// is 10 and the rotation frequency is 5, this should return 15.
 	pub fn next_rotation_at(&self) -> N {
 		let cycle_once = self.now + self.group_rotation_frequency;
-		cycle_once
-			- (cycle_once.saturating_sub(self.session_start_block) % self.group_rotation_frequency)
+		cycle_once -
+			(cycle_once.saturating_sub(self.session_start_block) % self.group_rotation_frequency)
 	}
 
 	/// Returns the block number of the last rotation before or including the current block. If the
 	/// current block is 10 and the rotation frequency is 5, this should return 10.
 	pub fn last_rotation_at(&self) -> N {
-		self.now
-			- (self.now.saturating_sub(self.session_start_block) % self.group_rotation_frequency)
+		self.now -
+			(self.now.saturating_sub(self.session_start_block) % self.group_rotation_frequency)
 	}
 }
 
@@ -1428,9 +1428,8 @@ impl ConsensusLog {
 		digest_item: &sp_runtime::DigestItem,
 	) -> Result<Option<Self>, codec::Error> {
 		match digest_item {
-			sp_runtime::DigestItem::Consensus(id, encoded) if id == &POLKADOT_ENGINE_ID => {
-				Ok(Some(Self::decode(&mut &encoded[..])?))
-			},
+			sp_runtime::DigestItem::Consensus(id, encoded) if id == &POLKADOT_ENGINE_ID =>
+				Ok(Some(Self::decode(&mut &encoded[..])?)),
 			_ => Ok(None),
 		}
 	}
@@ -1466,38 +1465,33 @@ impl DisputeStatement {
 		session: SessionIndex,
 	) -> Result<Vec<u8>, ()> {
 		match self {
-			DisputeStatement::Valid(ValidDisputeStatementKind::Explicit) => {
+			DisputeStatement::Valid(ValidDisputeStatementKind::Explicit) =>
 				Ok(ExplicitDisputeStatement { valid: true, candidate_hash, session }
-					.signing_payload())
-			},
+					.signing_payload()),
 			DisputeStatement::Valid(ValidDisputeStatementKind::BackingSeconded(
 				inclusion_parent,
 			)) => Ok(CompactStatement::Seconded(candidate_hash).signing_payload(&SigningContext {
 				session_index: session,
 				parent_hash: *inclusion_parent,
 			})),
-			DisputeStatement::Valid(ValidDisputeStatementKind::BackingValid(inclusion_parent)) => {
+			DisputeStatement::Valid(ValidDisputeStatementKind::BackingValid(inclusion_parent)) =>
 				Ok(CompactStatement::Valid(candidate_hash).signing_payload(&SigningContext {
 					session_index: session,
 					parent_hash: *inclusion_parent,
-				}))
-			},
-			DisputeStatement::Valid(ValidDisputeStatementKind::ApprovalChecking) => {
-				Ok(ApprovalVote(candidate_hash).signing_payload(session))
-			},
+				})),
+			DisputeStatement::Valid(ValidDisputeStatementKind::ApprovalChecking) =>
+				Ok(ApprovalVote(candidate_hash).signing_payload(session)),
 			DisputeStatement::Valid(
 				ValidDisputeStatementKind::ApprovalCheckingMultipleCandidates(candidate_hashes),
-			) => {
+			) =>
 				if candidate_hashes.contains(&candidate_hash) {
 					Ok(ApprovalVoteMultipleCandidates(candidate_hashes).signing_payload(session))
 				} else {
 					Err(())
-				}
-			},
-			DisputeStatement::Invalid(InvalidDisputeStatementKind::Explicit) => {
+				},
+			DisputeStatement::Invalid(InvalidDisputeStatementKind::Explicit) =>
 				Ok(ExplicitDisputeStatement { valid: false, candidate_hash, session }
-					.signing_payload())
-			},
+					.signing_payload()),
 		}
 	}
 
@@ -1570,11 +1564,11 @@ impl ValidDisputeStatementKind {
 	/// Whether the statement is from the backing phase.
 	pub fn is_backing(&self) -> bool {
 		match self {
-			ValidDisputeStatementKind::BackingSeconded(_)
-			| ValidDisputeStatementKind::BackingValid(_) => true,
-			ValidDisputeStatementKind::Explicit
-			| ValidDisputeStatementKind::ApprovalChecking
-			| ValidDisputeStatementKind::ApprovalCheckingMultipleCandidates(_) => false,
+			ValidDisputeStatementKind::BackingSeconded(_) |
+			ValidDisputeStatementKind::BackingValid(_) => true,
+			ValidDisputeStatementKind::Explicit |
+			ValidDisputeStatementKind::ApprovalChecking |
+			ValidDisputeStatementKind::ApprovalCheckingMultipleCandidates(_) => false,
 		}
 	}
 }
@@ -1729,12 +1723,10 @@ impl ValidityAttestation {
 		signing_context: &SigningContext<H>,
 	) -> Vec<u8> {
 		match *self {
-			ValidityAttestation::Implicit(_) => {
-				(CompactStatement::Seconded(candidate_hash), signing_context).encode()
-			},
-			ValidityAttestation::Explicit(_) => {
-				(CompactStatement::Valid(candidate_hash), signing_context).encode()
-			},
+			ValidityAttestation::Implicit(_) =>
+				(CompactStatement::Seconded(candidate_hash), signing_context).encode(),
+			ValidityAttestation::Explicit(_) =>
+				(CompactStatement::Valid(candidate_hash), signing_context).encode(),
 		}
 	}
 }

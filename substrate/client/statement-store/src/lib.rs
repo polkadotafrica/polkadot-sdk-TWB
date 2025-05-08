@@ -428,8 +428,8 @@ impl Index {
 			}
 			// Check if we can evict enough lower priority statements to satisfy constraints
 			for (entry, (_, len)) in account_rec.by_priority.iter() {
-				if (account_rec.data_size - would_free_size + statement_len <= max_size)
-					&& account_rec.by_priority.len() + 1 - evicted.len() <= max_count
+				if (account_rec.data_size - would_free_size + statement_len <= max_size) &&
+					account_rec.by_priority.len() + 1 - evicted.len() <= max_count
 				{
 					// Satisfied
 					break;
@@ -453,8 +453,8 @@ impl Index {
 			}
 		}
 		// Now check global constraints as well.
-		if !((self.total_size - would_free_size + statement_len <= self.options.max_total_size)
-			&& self.entries.len() + 1 - evicted.len() <= self.options.max_total_statements)
+		if !((self.total_size - would_free_size + statement_len <= self.options.max_total_size) &&
+			self.entries.len() + 1 - evicted.len() <= self.options.max_total_statements)
 		{
 			log::debug!(
 				target: LOG_TARGET,
@@ -818,16 +818,14 @@ impl StatementStore for Store {
 	fn submit(&self, statement: Statement, source: StatementSource) -> SubmitResult {
 		let hash = statement.hash();
 		match self.index.read().query(&hash) {
-			IndexQuery::Expired => {
+			IndexQuery::Expired =>
 				if !source.can_be_resubmitted() {
 					return SubmitResult::KnownExpired;
-				}
-			},
-			IndexQuery::Exists => {
+				},
+			IndexQuery::Exists =>
 				if !source.can_be_resubmitted() {
 					return SubmitResult::Known;
-				}
-			},
+				},
 			IndexQuery::Unknown => {},
 		}
 
@@ -868,9 +866,8 @@ impl StatementStore for Store {
 				self.metrics.report(|metrics| metrics.validations_invalid.inc());
 				return SubmitResult::Bad("Missing statement proof");
 			},
-			Err(InvalidStatement::InternalError) => {
-				return SubmitResult::InternalError(Error::Runtime)
-			},
+			Err(InvalidStatement::InternalError) =>
+				return SubmitResult::InternalError(Error::Runtime),
 		};
 
 		let current_time = self.timestamp();

@@ -420,11 +420,10 @@ fn get_wasm_workspace_root() -> PathBuf {
 	loop {
 		match out_dir.parent() {
 			Some(parent) if out_dir.ends_with("build") => return parent.to_path_buf(),
-			_ => {
+			_ =>
 				if !out_dir.pop() {
 					break;
-				}
-			},
+				},
 		}
 	}
 
@@ -601,18 +600,18 @@ fn project_enabled_features(
 			// this heuristic anymore. However, for the transition phase between now and namespaced
 			// features already being present in nightly, we need this code to make
 			// runtimes compile with all the possible rustc versions.
-			if v.len() == 1
-				&& v.get(0).map_or(false, |v| *v == format!("dep:{}", f))
-				&& std_enabled.as_ref().map(|e| e.iter().any(|ef| ef == *f)).unwrap_or(false)
+			if v.len() == 1 &&
+				v.get(0).map_or(false, |v| *v == format!("dep:{}", f)) &&
+				std_enabled.as_ref().map(|e| e.iter().any(|ef| ef == *f)).unwrap_or(false)
 			{
 				return false;
 			}
 
 			// We don't want to enable the `std`/`default` feature for the wasm build and
 			// we need to check if the feature is enabled by checking the env variable.
-			*f != "std"
-				&& *f != "default"
-				&& env::var(format!("CARGO_FEATURE_{feature_env}"))
+			*f != "std" &&
+				*f != "default" &&
+				env::var(format!("CARGO_FEATURE_{feature_env}"))
 					.map(|v| v == "1")
 					.unwrap_or_default()
 		})

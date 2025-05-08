@@ -429,12 +429,10 @@ where
 
 	fn on_handle_statement_import(&mut self, who: PeerId, import: &SubmitResult) {
 		match import {
-			SubmitResult::New(NetworkPriority::High) => {
-				self.network.report_peer(who, rep::EXCELLENT_STATEMENT)
-			},
-			SubmitResult::New(NetworkPriority::Low) => {
-				self.network.report_peer(who, rep::GOOD_STATEMENT)
-			},
+			SubmitResult::New(NetworkPriority::High) =>
+				self.network.report_peer(who, rep::EXCELLENT_STATEMENT),
+			SubmitResult::New(NetworkPriority::Low) =>
+				self.network.report_peer(who, rep::GOOD_STATEMENT),
 			SubmitResult::Known => self.network.report_peer(who, rep::ANY_STATEMENT_REFUND),
 			SubmitResult::KnownExpired => {},
 			SubmitResult::Ignored => {},

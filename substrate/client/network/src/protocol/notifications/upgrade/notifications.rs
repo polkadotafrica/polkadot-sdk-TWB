@@ -263,10 +263,10 @@ where
 					}
 				},
 
-				st @ NotificationsInSubstreamHandshake::NotSent
-				| st @ NotificationsInSubstreamHandshake::Sent
-				| st @ NotificationsInSubstreamHandshake::ClosingInResponseToRemote
-				| st @ NotificationsInSubstreamHandshake::BothSidesClosed => {
+				st @ NotificationsInSubstreamHandshake::NotSent |
+				st @ NotificationsInSubstreamHandshake::Sent |
+				st @ NotificationsInSubstreamHandshake::ClosingInResponseToRemote |
+				st @ NotificationsInSubstreamHandshake::BothSidesClosed => {
 					*this.handshake = st;
 					return Poll::Ready(Ok(()));
 				},
@@ -308,9 +308,8 @@ where
 				},
 				NotificationsInSubstreamHandshake::Flush => {
 					match Sink::poll_flush(this.socket.as_mut(), cx)? {
-						Poll::Ready(()) => {
-							*this.handshake = NotificationsInSubstreamHandshake::Sent
-						},
+						Poll::Ready(()) =>
+							*this.handshake = NotificationsInSubstreamHandshake::Sent,
 						Poll::Pending => {
 							*this.handshake = NotificationsInSubstreamHandshake::Flush;
 							return Poll::Pending;
@@ -320,10 +319,9 @@ where
 
 				NotificationsInSubstreamHandshake::Sent => {
 					match Stream::poll_next(this.socket.as_mut(), cx) {
-						Poll::Ready(None) => {
+						Poll::Ready(None) =>
 							*this.handshake =
-								NotificationsInSubstreamHandshake::ClosingInResponseToRemote
-						},
+								NotificationsInSubstreamHandshake::ClosingInResponseToRemote,
 						Poll::Ready(Some(msg)) => {
 							*this.handshake = NotificationsInSubstreamHandshake::Sent;
 							return Poll::Ready(Some(msg));
@@ -335,18 +333,16 @@ where
 					}
 				},
 
-				NotificationsInSubstreamHandshake::ClosingInResponseToRemote => {
+				NotificationsInSubstreamHandshake::ClosingInResponseToRemote =>
 					match Sink::poll_close(this.socket.as_mut(), cx)? {
-						Poll::Ready(()) => {
-							*this.handshake = NotificationsInSubstreamHandshake::BothSidesClosed
-						},
+						Poll::Ready(()) =>
+							*this.handshake = NotificationsInSubstreamHandshake::BothSidesClosed,
 						Poll::Pending => {
 							*this.handshake =
 								NotificationsInSubstreamHandshake::ClosingInResponseToRemote;
 							return Poll::Pending;
 						},
-					}
-				},
+					},
 
 				NotificationsInSubstreamHandshake::BothSidesClosed => return Poll::Ready(None),
 			}

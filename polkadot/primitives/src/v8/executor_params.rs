@@ -450,9 +450,8 @@ fn ensure_prep_hash_changes() {
 				ExecutorParams::from(&[PvfPrepTimeout(PvfPrepKind::Prepare, 2)][..]),
 			),
 			PvfExecTimeout(_, _) => continue,
-			WasmExtBulkMemory => {
-				(ExecutorParams::default(), ExecutorParams::from(&[WasmExtBulkMemory][..]))
-			},
+			WasmExtBulkMemory =>
+				(ExecutorParams::default(), ExecutorParams::from(&[WasmExtBulkMemory][..])),
 		};
 
 		assert_ne!(ep1.prep_hash(), ep2.prep_hash());

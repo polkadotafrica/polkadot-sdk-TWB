@@ -93,9 +93,8 @@ impl Check {
 	pub fn is_approved(&self, max_assignment_tick: Tick) -> bool {
 		match *self {
 			Check::Unapproved => false,
-			Check::Approved(_, last_assignment_tick) => {
-				last_assignment_tick.map_or(true, |t| t <= max_assignment_tick)
-			},
+			Check::Approved(_, last_assignment_tick) =>
+				last_assignment_tick.map_or(true, |t| t <= max_assignment_tick),
 			Check::ApprovedOneThird => true,
 		}
 	}
@@ -305,8 +304,8 @@ impl State {
 		// validators.
 		// If there are a lot then we've got bigger problems and no need to make this
 		// array unnecessarily large.
-		if self.no_show_validators.len() + no_show_validators.len()
-			< MAX_RECORDED_NO_SHOW_VALIDATORS_PER_CANDIDATE
+		if self.no_show_validators.len() + no_show_validators.len() <
+			MAX_RECORDED_NO_SHOW_VALIDATORS_PER_CANDIDATE
 		{
 			self.no_show_validators.extend(no_show_validators);
 		}

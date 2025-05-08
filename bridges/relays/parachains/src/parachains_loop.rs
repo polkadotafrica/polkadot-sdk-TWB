@@ -358,8 +358,8 @@ where
 					// find last free relay chain header in the range that we are interested in
 					let scan_range_begin = relay_of_head_at_target.number();
 					let scan_range_end = best_finalized_relay_block_at_target.number();
-					if scan_range_end.saturating_sub(scan_range_begin)
-						< free_source_relay_headers_interval
+					if scan_range_end.saturating_sub(scan_range_begin) <
+						free_source_relay_headers_interval
 					{
 						// there are no new **free** relay chain headers in the range
 						log::trace!(
@@ -650,9 +650,7 @@ impl<P: ParachainsPipeline> SubmittedHeadsTracker<P> {
 		let is_head_updated = match (self.submitted_head, head_at_target) {
 			(AvailableHeader::Available(submitted_head), Some(head_at_target))
 				if head_at_target.number() >= submitted_head.number() =>
-			{
-				true
-			},
+				true,
 			(AvailableHeader::Missing, None) => true,
 			_ => false,
 		};
@@ -674,9 +672,8 @@ impl<P: ParachainsPipeline> SubmittedHeadsTracker<P> {
 		// then restart our sync
 		let transaction_tracker = self.transaction_tracker.clone();
 		match poll!(transaction_tracker) {
-			Poll::Ready(TrackedTransactionStatus::Lost) => {
-				return SubmittedHeadStatus::Final(TrackedTransactionStatus::Lost)
-			},
+			Poll::Ready(TrackedTransactionStatus::Lost) =>
+				return SubmittedHeadStatus::Final(TrackedTransactionStatus::Lost),
 			Poll::Ready(TrackedTransactionStatus::Finalized(_)) => {
 				// so we are here and our transaction is mined+finalized, but some of heads were not
 				// updated => we're considering our loop as stalled

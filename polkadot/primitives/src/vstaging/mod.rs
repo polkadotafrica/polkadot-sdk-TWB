@@ -310,25 +310,22 @@ pub enum CandidateEvent<H = Hash> {
 impl<H: Encode + Copy> From<CandidateEvent<H>> for super::v8::CandidateEvent<H> {
 	fn from(value: CandidateEvent<H>) -> Self {
 		match value {
-			CandidateEvent::CandidateBacked(receipt, head_data, core_index, group_index) => {
+			CandidateEvent::CandidateBacked(receipt, head_data, core_index, group_index) =>
 				super::v8::CandidateEvent::CandidateBacked(
 					receipt.into(),
 					head_data,
 					core_index,
 					group_index,
-				)
-			},
-			CandidateEvent::CandidateIncluded(receipt, head_data, core_index, group_index) => {
+				),
+			CandidateEvent::CandidateIncluded(receipt, head_data, core_index, group_index) =>
 				super::v8::CandidateEvent::CandidateIncluded(
 					receipt.into(),
 					head_data,
 					core_index,
 					group_index,
-				)
-			},
-			CandidateEvent::CandidateTimedOut(receipt, head_data, core_index) => {
-				super::v8::CandidateEvent::CandidateTimedOut(receipt.into(), head_data, core_index)
-			},
+				),
+			CandidateEvent::CandidateTimedOut(receipt, head_data, core_index) =>
+				super::v8::CandidateEvent::CandidateTimedOut(receipt.into(), head_data, core_index),
 		}
 	}
 }
@@ -688,9 +685,8 @@ impl<H: Copy> CommittedCandidateReceiptV2<H> {
 				}
 			},
 			CandidateDescriptorVersion::V2 => {},
-			CandidateDescriptorVersion::Unknown => {
-				return Err(CommittedCandidateReceiptError::UnknownVersion(self.descriptor.version))
-			},
+			CandidateDescriptorVersion::Unknown =>
+				return Err(CommittedCandidateReceiptError::UnknownVersion(self.descriptor.version)),
 		}
 
 		// Check the core index
@@ -1010,9 +1006,8 @@ impl<H: Copy> From<CoreState<H>> for super::v8::CoreState<H> {
 		match value {
 			CoreState::Free => super::v8::CoreState::Free,
 			CoreState::Scheduled(core) => super::v8::CoreState::Scheduled(core),
-			CoreState::Occupied(occupied_core) => {
-				super::v8::CoreState::Occupied(occupied_core.into())
-			},
+			CoreState::Occupied(occupied_core) =>
+				super::v8::CoreState::Occupied(occupied_core.into()),
 		}
 	}
 }

@@ -211,14 +211,13 @@ where
 	let max_messages_size_in_single_batch = P::TargetChain::max_extrinsic_size() / 3;
 	let limits = match params.limits {
 		Some(limits) => limits,
-		None => {
+		None =>
 			select_delivery_transaction_limits_rpc(
 				&params,
 				P::TargetChain::max_extrinsic_weight(),
 				P::SourceChain::MAX_UNREWARDED_RELAYERS_IN_CONFIRMATION_TX,
 			)
-			.await?
-		},
+			.await?,
 	};
 	let (max_messages_in_single_batch, max_messages_weight_in_single_batch) =
 		(limits.max_messages_in_single_batch / 2, limits.max_messages_weight_in_single_batch / 2);
@@ -709,9 +708,8 @@ mod tests {
 	impl From<MockUtilityCall<RuntimeCall>> for RuntimeCall {
 		fn from(value: MockUtilityCall<RuntimeCall>) -> RuntimeCall {
 			match value {
-				MockUtilityCall::batch_all(calls) => {
-					RuntimeCall::Utility(UtilityCall::<RuntimeCall>::batch_all(calls))
-				},
+				MockUtilityCall::batch_all(calls) =>
+					RuntimeCall::Utility(UtilityCall::<RuntimeCall>::batch_all(calls)),
 			}
 		}
 	}

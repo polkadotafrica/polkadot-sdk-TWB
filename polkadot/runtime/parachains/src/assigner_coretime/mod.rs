@@ -290,9 +290,8 @@ impl<T: Config> AssignmentProvider<BlockNumberFor<T>> for Pallet<T> {
 
 	fn report_processed(assignment: Assignment) {
 		match assignment {
-			Assignment::Pool { para_id, core_index } => {
-				on_demand::Pallet::<T>::report_processed(para_id, core_index)
-			},
+			Assignment::Pool { para_id, core_index } =>
+				on_demand::Pallet::<T>::report_processed(para_id, core_index),
 			Assignment::Bulk(_) => {},
 		}
 	}
@@ -304,9 +303,8 @@ impl<T: Config> AssignmentProvider<BlockNumberFor<T>> for Pallet<T> {
 	/// - `assignment`: The on demand assignment.
 	fn push_back_assignment(assignment: Assignment) {
 		match assignment {
-			Assignment::Pool { para_id, core_index } => {
-				on_demand::Pallet::<T>::push_back_assignment(para_id, core_index)
-			},
+			Assignment::Pool { para_id, core_index } =>
+				on_demand::Pallet::<T>::push_back_assignment(para_id, core_index),
 			Assignment::Bulk(_) => {
 				// Session changes are rough. We just drop assignments that did not make it on a
 				// session boundary. This seems sensible as bulk is region based. Meaning, even if
@@ -326,9 +324,8 @@ impl<T: Config> AssignmentProvider<BlockNumberFor<T>> for Pallet<T> {
 
 	fn assignment_duplicated(assignment: &Assignment) {
 		match assignment {
-			Assignment::Pool { para_id, core_index } => {
-				on_demand::Pallet::<T>::assignment_duplicated(*para_id, *core_index)
-			},
+			Assignment::Pool { para_id, core_index } =>
+				on_demand::Pallet::<T>::assignment_duplicated(*para_id, *core_index),
 			Assignment::Bulk(_) => {},
 		}
 	}
