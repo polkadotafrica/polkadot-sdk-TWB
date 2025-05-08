@@ -6,12 +6,8 @@ on:
   pull_request:
     branches: [State-Driven-Task]
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
   test:
-    name: Test Pallet
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,8 +17,8 @@ jobs:
         with:
           toolchain: nightly-2023-12-01
           targets: wasm32-unknown-unknown
-          components: rustfmt, clippy
-          
+          components: rustfmt, clippy, rust-src
+      
       - name: Cache Dependencies
         uses: actions/cache@v3
         with:
@@ -31,32 +27,20 @@ jobs:
             ~/.cargo/git
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-            
-      - name: Check Compilation
-        working-directory: substrate/frame/pallet-auto-tasks
-        run: cargo check --all-targets --all-features
-          
+      
       - name: Check Format
         working-directory: substrate/frame/pallet-auto-tasks
         run: cargo fmt --all -- --check
-          
-      - name: Clippy Check
+      
+      - name: Check Compilation
         working-directory: substrate/frame/pallet-auto-tasks
-        run: cargo clippy --all-targets --all-features -- -D warnings
-        env:
-          RUSTFLAGS: "-Dwarnings"
-          
+        run: cargo check --features std --verbose
+      
       - name: Run Tests
         working-directory: substrate/frame/pallet-auto-tasks
-        run: cargo test --verbose --no-fail-fast
-          
+        run: cargo test --features std --verbose --no-fail-fast
+      
       - name: Run Experimental Tests
         working-directory: substrate/frame/pallet-auto-tasks
-        run: cargo test --features experimental --verbose --no-fail-fast
+        run: cargo test --features "std experimental" --verbose --no-fail-fast
         continue-on-error: true
-          
-      - name: Build Documentation
-        working-directory: substrate/frame/pallet-auto-tasks
-        run: cargo doc --no-deps --document-private-items

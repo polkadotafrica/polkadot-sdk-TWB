@@ -1,15 +1,15 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use frame_support::{
-    dispatch::DispatchResult,
     pallet_prelude::*,
     traits::{IsType, Task},
+    dispatch::DispatchResult,
 };
 #[cfg(feature = "experimental")]
 use frame_system::offchain::SubmitTransaction;
 use frame_system::{
-    offchain::CreateInherent,
     pallet_prelude::*,
+    offchain::CreateInherent,
 };
 
 pub use pallet::*;
@@ -19,20 +19,20 @@ pub use weights::WeightInfo;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
-#[cfg(feature = "experimental")]
-const LOG_TARGET: &str = "pallet-auto-tasks";
-
 #[frame_support::pallet]
 pub mod pallet {
     use super::*;
 
     #[pallet::pallet]
+    #[pallet::generate_store(pub(super) trait Store)]
     pub struct Pallet<T>(_);
 
     #[pallet::config]
-    pub trait Config: CreateInherent<frame_system::Call<Self>> + frame_system::Config {
-        type RuntimeTask: Task + IsType<<Self as frame_system::Config>::RuntimeTask> + From<Task<Self>>;
-        type WeightInfo: WeightInfo;
+    pub trait Config: frame_system::Config + CreateInherent<Call<Self>> {
+        type RuntimeTask: Task 
+            + IsType<<Self as frame_system::Config>::RuntimeTask>
+            + From<Task<Self>>;
+        type WeightInfo: crate::weights::WeightInfo;
     }
 
     #[pallet::storage]
@@ -75,15 +75,10 @@ pub mod pallet {
             if let Some(key) = Numbers::<T>::iter_keys().next() {
                 let task = Task::<T>::AddNumberIntoTotal { i: key };
                 let runtime_task = <T as Config>::RuntimeTask::from(task);
-                let call = frame_system::Call::<T>::do_task { task: runtime_task.into() };
+                let call = Call::<T>::do_task { task: runtime_task.into() };
 
-                let xt = <T as CreateInherent<frame_system::Call<T>>>::create_inherent(call.into());
-                let res = SubmitTransaction::<T, frame_system::Call<T>>::submit_transaction(xt);
-
-                match res {
-                    Ok(_) => log::info!(target: LOG_TARGET, "Submitted task for block {}", block_number),
-                    Err(e) => log::error!(target: LOG_TARGET, "Submission error: {:?}", e),
-                }
+                let xt = <T as CreateInherent<Call<T>>>::create_inherent(call.into());
+                let _ = SubmitTransaction::<T, Call<T>>::submit_transaction(xt);
             }
         }
     }
@@ -101,7 +96,7 @@ pub mod pallet {
         pub fn get_totals(origin: OriginFor<T>) -> DispatchResult {
             ensure_signed(origin)?;
             let (keys, values) = Total::<T>::get();
-            log::info!("Totals - Keys: {}, Values: {}", keys, values);
+            frame_support::log::info!("Totals - Keys: {}, Values: {}", keys, values);
             Ok(())
         }
     }
