@@ -8,7 +8,7 @@ use frame_system::offchain::SubmitTransaction;
 
 pub use pallet::*;
 pub mod weights;
-pub use weights::WeightInfo;  // Explicitly import the trait
+pub use weights::WeightInfo; // Explicitly import the trait
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
