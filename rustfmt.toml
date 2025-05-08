@@ -1,11 +1,13 @@
-# Enable unstable features
-unstable_features = true
+# Disable unstable features for CI stability
+unstable_features = false
 
-# Preserve current preferences
+# Basic formatting rules
 hard_tabs = true
 max_width = 100
 reorder_imports = true
-
-# Add settings to fix the issues in your diffs
 newline_style = "Unix"
 trailing_comma = "Always"
+
+# Explicitly disable nightly-only features
+wrap_comments = false
+imports_granularity = "Preserve"
