@@ -14,11 +14,10 @@ repository = "https://github.com/polkadotafrica/polkadot-sdk-TWB"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
+parity-scale-codec = { version = "3.6.1", default-features = false, features = ["derive"] }
 scale-info = { version = "2.5.0", default-features = false, features = ["derive"] }
 log = { version = "0.4.20", default-features = false }
 
-# Substrate dependencies
 frame-support = { path = "../support", default-features = false }
 frame-system = { path = "../system", default-features = false }
 sp-std = { path = "../../primitives/std", default-features = false }
@@ -31,7 +30,7 @@ sp-runtime = { path = "../../primitives/runtime" }
 [features]
 default = ["std"]
 std = [
-    "codec/std",
+    "parity-scale-codec/std",
     "scale-info/std",
     "log/std",
     "frame-support/std",
