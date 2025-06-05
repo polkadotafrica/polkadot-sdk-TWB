@@ -24,6 +24,18 @@ If you want to get an example node running quickly you can execute the following
 curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/paritytech/polkadot-sdk/master/scripts/getting-started.sh | bash
 ```
 
+## Technical Writing Bounties
+To submit polkadot-sdk related technical writing bounties, you are required to have a fork of the main polkadot-sdk repository locally.
+
+
+Checkout a branch for bounty related submissions
+```bash
+git checkout -b State-driven-tasks-TWB
+```
+
+Head over to [polkadot-sdk-TWB/pulls](https://github.com/polkadotafrica/polkadot-sdk-TWB/pulls) and create a pull request using the UI,
+make sure you point your crearted branch to the relatively named branch for the specific bounty you are submitting.
+
 ## 📚 Documentation
 
 * [Polkadot Documentation Portal](https://docs.polkadot.com)
