@@ -25,7 +25,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/paritytec
 ```
 
 ## Technical Writing Bounties
-To submit polkadot-sdk related technical writing bounties, you are required to have a fork of the main polkadot-sdk repository locally.
+To submit polkadot-sdk related technical writing bounties, you are required to have your fork of the main [polkadot-sdk](https://github.com/paritytech/polkadot-sdk) repository locally.
 
 
 Checkout a branch for bounty related submissions
